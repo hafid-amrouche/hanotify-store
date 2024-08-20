@@ -1,0 +1,14 @@
+.class-item h4{
+    width: 50%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+.container{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.container-info{
+    flex-grow: 1;
+}

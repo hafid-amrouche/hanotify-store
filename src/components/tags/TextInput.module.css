@@ -1,0 +1,51 @@
+
+.password{
+    padding-inline-end: 42px !important;
+}
+.eye{
+    position: absolute;
+    right: 8px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.label{
+    position: absolute;
+    left: 8px;
+    z-index: 1;
+    font-weight: bold;
+    color: var(--grey-color);
+    font-size: 1rem;
+}
+.label-on-top{
+    font-size: 10px;
+    top: -2px;
+    left: 6px;
+    font-weight:normal;
+    color: var(--text-color);
+}
+.placeholder-exist{
+    padding: 6px 8px !important;
+}
+
+.input {
+    display: block;
+    position: relative;
+    padding: 6px 8px;
+    font-size: 16px;
+    margin: 0;
+    background-clip: padding-box;
+    border: 1px solid var(--primary-fading-color);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    position: relative;
+    white-space: nowrap; /* Prevents the text from wrapping to the next line */
+    overflow: hidden; /* Ensures that the overflow text is hidden */
+    text-overflow: ellipsis; /* Adds the ellipsis at the end of the text */
+    width: 100%;
+    border-radius: var(--border-radius-2)
+}
+
+.input:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+  } 

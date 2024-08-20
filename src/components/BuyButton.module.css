@@ -1,0 +1,26 @@
+.button{
+    text-align: center;
+    color: var(--background-color);
+    background-color: var(--primary-color);
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-2);
+}
+.button:not(.outline):hover{
+    background-color: var(--primary-dark-color);
+}
+.button.disabled{
+    opacity: 0.5;
+}
+.outline{
+    color: var(--primary-color);
+    border: var(--primary-color) 1px solid;
+    background-color: transparent;
+}
+.button.outline:hover{
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}

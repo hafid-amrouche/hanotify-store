@@ -1,0 +1,24 @@
+.radio[type="radio"] {
+    appearance: none; /* Removes default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px; /* Size of the radio button */
+    height: 20px; /* Size of the radio button */
+    border-radius: 50%; /* Makes it circular */
+    border: 2px solid var(--primary-color);; /* Green color */
+    outline: none; /* Removes outline */
+    cursor: pointer; /* Shows cursor on hover */
+    position: relative;
+}
+.radio[type="radio"]:checked::after {
+    content: ''; /* Shows dot inside */
+    display: block;
+    width: 10px; /* Size of the dot */
+    height: 10px; /* Size of the dot */
+    background-color: var(--primary-color); /* Green color */
+    border-radius: 50%; /* Makes it circular */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers dot */
+}

@@ -1,0 +1,21 @@
+.container{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+
+}
+.circle{
+    width: 32px;
+    aspect-ratio: 1;
+    border: 1px solid var(--grey-color);
+    cursor: pointer;
+    border-radius: var(--border-radius-1);
+
+}
+.selected{
+    border: 2px solid var(--primary-color);
+    padding: 1px;
+    border-radius: var(--border-radius-1);
+
+}

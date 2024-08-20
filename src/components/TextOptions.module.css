@@ -1,0 +1,19 @@
+.text{
+    color: var(--primary-color);
+    border: solid 1px var(--primary-fading-color);
+    padding: 0 8px;
+    cursor: pointer;
+    border-radius: var(--border-radius-1);
+}
+.text:hover,
+.text:active,
+.text.selected{
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+.container{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
