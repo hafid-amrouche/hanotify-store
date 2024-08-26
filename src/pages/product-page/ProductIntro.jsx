@@ -21,7 +21,7 @@ const ProductIntro = memo(() => {
             }}>{ productData.discount }</span>
           </span> }
         </h2>   
-        { productData.miniDescription &&  <p style={{lineHeight:1.4, marginTop:12}}>
+        { productData.miniDescription &&  <p style={{lineHeight:1.4, marginTop:8}}>
           {productData.miniDescription}
         </p>}     
         <div className='d-flex align-items-center gap-3'>

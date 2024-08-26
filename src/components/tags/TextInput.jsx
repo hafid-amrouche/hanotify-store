@@ -55,8 +55,8 @@ const TextInput = forwardRef(({
     <div className={containerClassName} style={{borderRadius: 'var(--border-radius-2)'}}>
       <div className='d-flex p-relative align-center ' style={{borderRadius: 'var(--border-radius-2)'}}>
         <div className='d-flex p-relative align-items-center flex-1' style={{borderRadius: 'var(--border-radius-2)'}}>
-          <input value={inputValue} style={{padding: '12px 8px 4px 8px', ...style}} onChange={(e)=>changeHandler(e.target.value)} placeholder={placeholder} onFocus={focusHandler} onBlur={blueHandler} type={innerType} className={ `  ${type==='password' ? classes['password'] : ''} ${classes['input']} ${error ? 'error' : ''} ${placeholder ? classes['placeholder-exist'] : ''} ${className || ''}`} ref={inputRef} {...props} />
-          { !placeholder && <label style={{width: `calc(100% - 16px)`}} onClick={()=>inputRef.current.focus() } className={`${classes['label']} ${error ? 'error ' : ''} ${ raiseLabel ? classes['label-on-top'] : ''} cut-text  ${type==='password' ? classes['password'] : ''}`}>{(raiseLabel ||  !placeholderLabel) ? label : placeholderLabel}</label>}
+          <input value={inputValue} style={{padding: '12px 8px 4px 8px', ...style}} onChange={(e)=>changeHandler(e.target.value)} placeholder={placeholder} onFocus={focusHandler} onBlur={blueHandler} type={innerType} className={ `input ${type==='password' ? classes['password'] : ''} ${error ? 'error' : ''} ${placeholder ? classes['placeholder-exist'] : ''} ${className || ''}`} ref={inputRef} {...props} />
+          { !placeholder && <label disabled={raiseLabel} style={{width: `calc(100% - 16px)`}} onClick={(e)=>{ if (!raiseLabel) inputRef.current.focus() }} className={`${classes['label']} ${error ? 'error ' : ''} ${ raiseLabel ? classes['label-on-top'] : ''} cut-text  ${type==='password' ? classes['password'] : ''}`}>{(raiseLabel ||  !placeholderLabel) ? label : placeholderLabel}</label>}
         </div>
         {type == 'password' && <i onClick={clickHandler} className={'fa-solid fa-eye' + (innerType === 'password' ? ' ' : '-slash ' ) + classes['eye']} />}
       </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import classes from './ImageOptions.module.css'
 import { useProductContext } from '../pages/product-page/store/product-context'
+import LazyImage from './LazyImage'
 
 const ImageOptions = ({options, setSelectedImageOption, selectedImageOption}) => {
   const {setCurrentImage} = useProductContext()
@@ -18,7 +19,7 @@ const ImageOptions = ({options, setSelectedImageOption, selectedImageOption}) =>
     <div className={classes.container}>
         {options.map(option=>(
             <div className={`${classes['image-container']} ${selectedImageOption.id === option.id ? classes.selected : undefined}`} key={option.id}>
-                <img src={option.image} className={classes.image} onClick={clickHandler.bind(this, option)} />
+                <LazyImage src={option.image} className={classes.image} onClick={clickHandler.bind(this, option)} />
             </div>
         ))}
     </div>

@@ -8,7 +8,6 @@ const RalatedProductsSection = () => {
     const [relatedProducts, setRelatedProducts] = useState(null) 
     const {productData} = useProductContext()
     const [loading, setloading] = useState(true)
-    console.log(relatedProducts)
     useEffect(()=>{
       const getRelatedProducts=async()=>{
         try{

@@ -36,9 +36,10 @@ const getScrollableAncestor = (element) => {
   while (currentNode && currentNode !== document.body) {
     const style = window.getComputedStyle(currentNode);
     const overflow = style.overflow;
+    const overflowY = style.overflowY;
 
     // Check if the element is scrollable
-    if ( overflow  === 'auto' ) {
+    if ( overflow  === 'auto' || overflowY  === 'auto' ) {
       if (currentNode.scrollHeight > currentNode.clientHeight) {
         return currentNode;
       }
@@ -68,8 +69,41 @@ export function adjustScrollPosition(element) {
   }
 }
 
-export const translaste=(text)=>text
+const textsDict = {
+  'ar': {
+    'DA': 'دج',
+    'Full name': 'الاسم الكامل',
+    'Phone number': 'رقم الهاتف',
+    'Shipping to': 'الشحن إلى',
+    'Home': 'المنزل',
+    'Office': 'المكتب',
+    'Total price': 'السعر الإجمالي',
+    'Confirm order': 'تأكيد الطلب',
+    'Your order have been recieved': 'لقد تم استلام طلبك',
+    'Order now': 'اطلب الآن',
+    'Exit': 'خروج',
+    'Free': 'مجاني',
+    'Your order was not submitted, please try again': 'لم يتم إرسال طلبك، يرجى المحاولة مرة أخرى'
+  }
+}
+export const translaste=(text)=>{
+  const lang = localStorage.getItem('language')
+  return textsDict[lang][text] || text
+}
 
+const stylingDict = {
+  'ar': {
+    'left': 'right',
+    'right': 'left',
+    'Left': 'Right',
+    'Right': 'Left'
+  }
+}
+
+export const translateStyling=(text)=>{
+  const lang = localStorage.getItem('language')
+  return stylingDict[lang][text] || text
+}
 
 export function adjustScrollToTop(element, delta= 0) {
   // Get the element's bounding box relative to the viewport
@@ -93,4 +127,15 @@ export function capitalizeFirstLetter(word) {
 
 export function isNum(char) {
   return char >= '0' && char <= '9';
+}
+
+export const componentLoader = async(importFunction)=>{
+  const loading = document.getElementById('loading__div')
+  const header = document.getElementById('main-header')
+  if (loading) loading.style.display='block'
+  if (header) header.style.marginTop = '4px'
+  await importFunction()
+  if (loading) loading.style.display='none'
+  if (header) header.style.removeProperty('margin-top')
+  return null
 }

@@ -16,7 +16,8 @@ const ProductPageInner=()=>{
     <div className='d-flex '>
         <div className='col-12 col-md-6 p-1'>
           <>
-            { productData.galleryImages.length > 0 &&  <div style={{top: 64, borderRadius: 'var(--border-radius-3)', overflow: 'hidden'}} className='p-sticky-md border' id='image-slider__container'>
+          {/* top: 64, */}
+            { productData.galleryImages.length > 0 &&  <div style={{ top: 8, borderRadius: 'var(--border-radius-3)', overflow: 'hidden'}} className='p-sticky-md border' id='image-slider__container'>
                 <ImageSlider/>
               </div> 
             }
@@ -40,7 +41,7 @@ const ProductPageInner=()=>{
             }
           </>  
         </div>
-        <div className='col-12 col-md-6 px-2 px-lg-4 d-flex flex-column gap-1 p-1'>
+        <div className='col-12 col-md-6 px-2 px-lg-4 d-flex flex-column gap-1 p-1 mt-3'> {/* remove mt-3 */}
           <ProductIntro/>
           {  productData.pricesAndImagesList.length > 0 &&
             <>
@@ -48,9 +49,9 @@ const ProductPageInner=()=>{
             </>
           }
           <div className='mt-3'>
-          <BuySection />
+          <BuySection productData={productData} />
           </div>
-          {productData.richText  && <div className='p-1 my-4 sun-editor-editable' dangerouslySetInnerHTML={{ __html: productData.richText }} />}
+          {productData.richText  && <LazyLoadCustiom className='p-1 my-4 sun-editor-editable' dangerouslySetInnerHTML={{ __html: productData.richText }} />}
         </div>
         <LazyLoadCustiom className='flex-1'>
           <hr className='my-3 border'></hr>

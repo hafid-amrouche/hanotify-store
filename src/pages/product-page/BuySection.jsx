@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { useProductContext } from './store/product-context'
 import { isNum, translaste } from '../../utils/utils'
 import BuyButton from '../../components/BuyButton'
 import classes from './BuySection.module.css'
@@ -9,10 +8,56 @@ import TextInput from '../../components/tags/TextInput'
 import Loader from '../../components/Loader'
 import Dialog from '../../components/tags/Dialog'
 import {useStoreContext} from '../../store/store-context'
+import Accordiant from '../../components/Accordiant'
+import { useParams } from 'react-router-dom'
 
+const NoteSection = ({setClientNote, showCN, setShowCN})=>{
+    useEffect(()=>{
+        if (!showCN) setClientNote('')
+    }, [showCN])
+    return(
+        <div className='d-flex mt-2'>
+            <div className='d-flex align-items-center' onClick={()=>setShowCN(!showCN)} style={{cursor: 'pointer'}}>
+                <Accordiant size={22} checked={showCN} setChecked={()=>{}} />
+                <h4>{ translaste('Add note') }</h4>
+            </div>
+            { showCN && <textarea onBlur={e=>setClientNote(e.target.value)} className='input m-2'/>}
+        </div>
+    )
+}
 
-const BuySection = memo(() => {
-    const {productData} = useProductContext()
+const ThankYouPage=({close, totalPrice})=>{
+    const {storeData} = useStoreContext()
+    const {id} = useParams()
+    console.log(storeData.facebookPixelId)
+    useEffect(()=>{
+        if (storeData.facebookPixelId) {
+            window.fbq('track', 'Purchase', {
+                content_ids: [id], // Unique identifier for the order
+                content_type: 'product',
+                value: totalPrice, // Total value of the purchase
+                currency: 'DZD' // Currency of the purchase
+            });
+        }
+    }, [])
+    return(
+        <div style={{
+            width: 'min(90vw , 400px)',
+            padding: 20,
+            backgroundColor: 'var(--background-color)',
+            borderRadius: 'var(--border-radius-2)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16
+        }}>
+            <h3 className='color-primary text-center'>{ translaste('Your order have been recieved') }</h3>
+            <BuyButton onClick={close}>{ translaste('Exit') }</BuyButton>
+        </div>
+    )
+}
+
+const BuySection = memo(({productData}) => {
+    const {storeData} = useStoreContext()
     const [selectedShipping, setSelectedShipping] = useState(productData.shippingCostByState[0])
 
     const [quantity, setQuantity] = useState(1)
@@ -22,6 +67,8 @@ const BuySection = memo(() => {
     
     const [stateCities, setStateCities] = useState([])
     const [city, setCity]=  useState({})
+    const {language} = useStoreContext()
+    const lang_prefix = language === 'ar' ? '_ar': '' 
 
     useEffect(()=>{
         const upadateCities = async()=>{
@@ -29,7 +76,7 @@ const BuySection = memo(() => {
             cities = cities.default
             cities = cities.map(city=>({
                 ...city,
-                label : city.name.split('-')[1]
+                label : city['name' + lang_prefix].split('-')[1]
             }))
             setStateCities(cities)
             setCity(cities[0])
@@ -121,11 +168,14 @@ const BuySection = memo(() => {
                         combination_index: combinationIndex, //
                         quantity, 
                         tracker: visitor.tracker,
+                        shipping_address: shippigAddress,
+                        client_note: clientNote
                     })
                 })
                 setFullName('')
                 setphoneNumber('')
                 setShippingAddress('')
+                setShowCN(false)
                 setOrderConfirmed(true)
                 setOrdersData(ordersData=>{
                     const newData = {...ordersData}
@@ -140,6 +190,7 @@ const BuySection = memo(() => {
                     setphoneNumber('')
                     setOrderConfirmed(true)
                     setLoading(false)
+                    setClientNote('')
                 }, 800)
             } 
         }
@@ -171,75 +222,63 @@ const BuySection = memo(() => {
         }
         setError(false)
         if(phoneNumber.length >=10) makeOrder()  
-    }, [city, fulllName, phoneNumber, shippigAddress, selectShippingType, combinationIndex ])
+    }, [city, fulllName, phoneNumber, selectShippingType, combinationIndex ])
 
+    const [clientNote, setClientNote]=  useState('')
+    const [showCN, setShowCN] = useState(false)
     return (
         <div className={classes['container'] + ' border p-1'} style={{ backgroundColor: 'var(--primary-transparent-color)', borderRadius: 'var(--border-radius-3)' }}>
-            { orderConfirmed && <Dialog open={orderConfirmed} ref={dialogRef} close={ ()=>setOrderConfirmed(false) }>
-                    <div style={{
-                        width: '60vw',
-                        padding: 20,
-                        backgroundColor: 'var(--background-color)',
-                        borderRadius: 'var(--border-radius-2)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 16
-                    }}>
-                        <h3 className='color-primary text-center'>{ translaste('You\'re order have been recieved'  ) }</h3>
-                        <BuyButton onClick={()=>dialogRef.current?.close()}>{ translaste('Exit') }</BuyButton>
-                    </div>
-            </Dialog> }
+            { orderConfirmed && 
+                <Dialog open={orderConfirmed} ref={dialogRef} close={ ()=>setOrderConfirmed(false) }>
+                    <ThankYouPage totalPrice={totalPrice} close={()=>dialogRef.current?.close()} />    
+                </Dialog> 
+            }
             <div className={classes['container-info']}>
                 <div className='d-flex align-items-center'>
                     <div className='col-6 p-1'>
-                        <TextInput label='Full name' value={fulllName} onChange={(value)=>setFullName(value)} />
+                        <TextInput label={translaste('Full name')} value={fulllName} onChange={(value)=>setFullName(value)} />
                     </div>
                 
                     <div className='col-6 p-1'>
-                        <TextInput label='Phone number' type='tel' value={phoneNumber} maxLength={10} onChange={(value)=>{
+                        <TextInput label={translaste('Phone number')} type='tel' value={phoneNumber} maxLength={10} onChange={(value)=>{
                             if (value ==='' || (value.startsWith('0') && isNum(value[value.length-1]))) setphoneNumber(value)    
                         }}/>
                     </div>
                     <div className='col-6 p-1'>
                         <Select options={productData.shippingCostByState} setSelectedOption={setSelectedShipping} selectedOption={selectedShipping} keyExtractor={option=>option.id}/>
                     </div>
-                    { productData.askForCity && <div className='col-6 p-1'>
-                        <Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>
-                    </div>}
-                    { productData.askForAddress && <div className='col-12 p-1'>
+                    <div className='col-6 p-1'>
+                        { selectShippingType==='cost' ? 
+                        <></>
+                        :<Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>}
+                    </div>
+                    { storeData.askForAddress && <div className='col-12 p-1'>
                         <TextInput label='Address' value={shippigAddress} onChange={(value)=>setShippingAddress(value)} />
                     </div>}
-                   
                 </div>
+                { storeData.askForClientNote && <NoteSection  {...{showCN, setShowCN, setClientNote}} />}
             </div>
             <div className={'my-2'}>
-                {  !(shippingToHomeExist && shippingToOfficeExist) &&
-                    <div className='d-flex'>
-                        <h4 className='col-6 p-1'>{ translaste('Shipping cost to') } { selectShippingType === 'cost' ? translaste('office') : translaste('home') }:</h4>
-                        <h4 className='color-primary p-1'>
-                            { selectedShipping[selectShippingType] == 0 ? translaste('Free') : `${selectedShipping[selectShippingType]} ${translaste('DA')} ` }
-                        </h4>
-                    </div>
-                }
-                { shippingToHomeExist && shippingToOfficeExist && <div>
-                        <h4 className='p-1'>{ translaste('Shippig to') }</h4>
+                
+                { (shippingToHomeExist || shippingToOfficeExist) && <div>
+                        <h4 className='p-1'>{ translaste('Shipping to') }</h4>
                         <div className='col-12 p-1 d-flex gap-2' >
-                           <BuyButton className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='cost'} onClick={()=>setSelectShippingType('costToHome')}>
+                           {selectedShipping.costToHome!==null && <BuyButton  style={{maxWidth: '50%'}} className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='cost'} onClick={()=>setSelectShippingType('costToHome')}>
                                 { `${translaste('Home')}`}:  
                                 <h4>
                                     {
                                         ` ${selectedShipping.costToHome == 0 ? translaste('Free') : `${selectedShipping.costToHome}${ translaste('DA')}`} `
                                     }
                                 </h4>
-                            </BuyButton>
-                            <BuyButton className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='costToHome'} onClick={()=>setSelectShippingType('cost')}>
+                            </BuyButton>}
+                           {selectedShipping.cost!==null && <BuyButton  style={{maxWidth: '50%'}} className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='costToHome'} onClick={()=>setSelectShippingType('cost')}>
                                 { `${translaste('Office')}`}: 
                                 <h4>
                                     {
                                         ` ${selectedShipping.cost== 0 ? translaste('Free') : `${selectedShipping.cost}${ translaste('DA')}`} `
                                     }
                                 </h4>
-                            </BuyButton> 
+                            </BuyButton>} 
                         </div>
                             
                 </div> }
@@ -269,6 +308,7 @@ const BuySection = memo(() => {
                     </BuyButton>
                 </div>
             </div>
+           
            { error && <div style={{color: 'red'}} className='p-2 d-flex justify-content-center col-12'>
                 <h4>{ translaste('Your order was not submitted, please try again') }</h4>
             </div>}

@@ -5,6 +5,7 @@ import {useNavigate, useParams} from 'react-router-dom'
 import states from '../../../json/states.json'
 import { translaste } from '../../../utils/utils';
 import BuyButton from '../../../components/BuyButton';
+import { useStoreContext } from '../../../store/store-context';
 
 const defaultProductData = {
     productId: null,
@@ -38,6 +39,9 @@ const ProductContextProvider=({children})=>{
     const [error, setError] = useState(false)
     const [currentImage, setCurrentImage] = useState(null)
     const {id: productId} = useParams()
+
+    const {language} = useStoreContext()
+    const lang_prefix = language === 'ar' ? '_ar': '' 
     useEffect(()=>{
         const fetchProduct=async()=>{
           setError(false)
@@ -56,19 +60,18 @@ const ProductContextProvider=({children})=>{
             
             const data = await response.json()
             let shippingCostByState = data.shippingCostByState
-            console.log(data.shippingCostByState)
             shippingCostByState = shippingCostByState.length > 0 ? shippingCostByState.map(cost=>{
               const state = states.find(state=>state.id === cost.id)
               return({
                   ...cost,
-                  cost: Number(cost.cost),
-                  costToHome: Number(cost.costToHome),
-                  label: `${state.code} - ${state.name}`,
+                  cost: cost.cost,
+                  costToHome: cost.costToHome,
+                  label: `${state.code} - ${state['name' + lang_prefix]}`,
               })
             }): states.map(state=>({
               cost: 0,
               costToHome: 0,
-              label: `${state.code} - ${state.name}`,
+              label: `${state.code} - ${state['name' + lang_prefix]}}`,
               id :state.id
             }))
             setProductData(productData=>({
@@ -89,35 +92,35 @@ const ProductContextProvider=({children})=>{
       }, [])
     
     
-      useEffect(() => {
-        // Dynamically import CSS based on the theme
-        const loadRichTextCss = async () => {
-          if (productData?.richText) {
-            await import('../suneditor-contents.css');
-          }
-        };
-    
-        loadRichTextCss();
-      }, [productData]);
-
-      const setCurrentImageWithImagesCount=(func)=>{
-        let newState;
-        if (typeof func === '' ) {
-          newState = func(productData.galleryImages.length)
+    useEffect(() => {
+      // Dynamically import CSS based on the theme
+      const loadRichTextCss = async () => {
+        if (productData?.richText) {
+          await import('../suneditor-contents.css');
         }
-        else {
-          newState = func
-        }
-        setCurrentImage(func)
-      }
+      };
+  
+      loadRichTextCss();
+    }, [productData]);
 
-      const defaultValue = {
-        productData,
-        setProductData,
-        currentImage,
-        setCurrentImage: setCurrentImageWithImagesCount,
+    const setCurrentImageWithImagesCount=(func)=>{
+      let newState;
+      if (typeof func === '' ) {
+        newState = func(productData.galleryImages.length)
       }
-      const navigate = useNavigate()
+      else {
+        newState = func
+      }
+      setCurrentImage(func)
+    }
+
+    const defaultValue = {
+      productData,
+      setProductData,
+      currentImage,
+      setCurrentImage: setCurrentImageWithImagesCount,
+    }
+    const navigate = useNavigate()
     return (
         <ProductContext.Provider value={defaultValue}>
             { productData.productId && children}

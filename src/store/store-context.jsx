@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect,  useState } from "react"
 import { darkenHexColor } from "../utils/utils"
 import logo from '../assets/react.svg'
-import { apiUrl, domain } from "../constants/Urls"
+import { apiUrl, domain, filesUrl } from "../constants/Urls"
+import FacebookPixel from "../components/FacebookPixel"
 
 const root = document.getElementById('root')
 
@@ -9,12 +10,17 @@ const StoreContext = createContext({
     theme: 'light',
     toggleTheme: ()=>{},
     storeData: {
-        logo: logo
+        logo,
+        askForClientNote: true,
+        askForAddress: true,
+        facebookPixelId: null,
     },
+    language: 'en',
+    setLanguage: ()=>{},
     setStoreData: ()=>{},
     errorBeowserData: null,
     setErrorStoreData: ()=>{},
-    colors: null
+    colors: null,
 })
 const ordersDatafromLocaleStorage = localStorage.getItem('ordersData')
 
@@ -30,7 +36,6 @@ if (has_custom_domain){
 }else{
     id = hostname.replace('.' + domain, '')
 }
-
 let storeFromLocaleStorage = localStorage.getItem('store-' + window.location.hostname)
 if (storeFromLocaleStorage) {
     storeFromLocaleStorage = JSON.parse(storeFromLocaleStorage) 
@@ -44,26 +49,67 @@ else{
     }
 }
 
+let defaultLanguage = localStorage.getItem('language')
+if (!defaultLanguage){
+    const userLanguage = navigator.language || navigator.userLanguage;
+    defaultLanguage = userLanguage.split(/[-_]/)[0];
+    if (!['en', 'fr', 'ar'].includes(defaultLanguage)){
+        defaultLanguage('en')
+    }
+}
+
 const StoreContextProvider=({children})=>{
     // theme
     const defaultTheme = localStorage.getItem('theme') || 'light'
     const [theme, setTheme] = useState(defaultTheme)
     const toggleTheme = ()=> setTheme(state =>state === 'light' ? 'dark' : 'light')
    
-    // useEffect(()=>{
-    //     localStorage.setItem('theme', theme)
-    // }, [theme])
+    useEffect(()=>{
+        localStorage.setItem('theme', theme)
+    }, [theme])
+
+    // language 
+    const [language, setLanguage] = useState('ar')
+    useEffect(()=>{
+        localStorage.setItem('language', language)
+        document.documentElement.setAttribute('lang', language)
+        if (language === 'ar') document.documentElement.setAttribute('dir', 'rtl')
+        else document.documentElement.setAttribute('dir', 'ltr')
+    }, [language])
    
     // store data
     const [storeData, setStoreData] = useState({
-        logo
+        logo,
+        askForClientNote: false,
+        askForAddress: false,
+        primaryColor: null,
+        bordersRounded: true,
+        facebookPixelId: null
     })
+    useEffect(()=>{
+        fetch(
+            filesUrl + `/get-store?id=${id}` ,
+            {
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            }
+        ).then(response=>{
+            response.json().then(data=>{
+                setStoreData(storeData=>({
+                    ...storeData,
+                    ...data,
+                }))
+            })
+        })
+    }, [])
+    
 
     // colors
     const [colors, setColors] =useState({})
     useEffect(()=>{
 
-        const primary = '#c259ff'
+        const primary = storeData.primaryColor
         let colors ={}
         if (theme === 'dark'){
             colors['--text-color'] = '#ffffff'
@@ -94,12 +140,37 @@ const StoreContextProvider=({children})=>{
         for (let key in colors) {
             root.style.setProperty([key], colors[key])
         }
-      }, [theme])
+    }, [theme ,storeData.primaryColor])
+    
+    useEffect(()=>{
+        if(storeData.bordersRounded) { 
+            root.style.setProperty(
+                '--border-radius-1', '4px'
+            )
+            root.style.setProperty(
+                '--border-radius-2', '8px'
+            )
+            root.style.setProperty(
+                '--border-radius-3', '16px'
+            )
+        }
+        else{
+            root.style.setProperty(
+                '--border-radius-1', '0'
+            )
+            root.style.setProperty(
+                '--border-radius-2', '0'
+            )
+            root.style.setProperty(
+                '--border-radius-3', '0'
+            )
+        }
+    }, [storeData.bordersRounded])
 
-      const [ordersData, setOrdersData] = useState(defaultOrdersData) //{/* finish from here */}
-      useEffect(()=>{
-        localStorage.setItem('ordersData', JSON.stringify(ordersData))
-      }, [ordersData])
+    const [ordersData, setOrdersData] = useState(defaultOrdersData) //{/* finish from here */}
+    useEffect(()=>{
+    localStorage.setItem('ordersData', JSON.stringify(ordersData))
+    }, [ordersData])
     
     // visitor tracking
     const [visitor, setVisitor] = useState(storeFromLocaleStorage)
@@ -123,11 +194,18 @@ const StoreContextProvider=({children})=>{
         }))
     }, [])
     useEffect(()=>{
-        if(visitor){localStorage.setItem('store-' + window.location.hostname, JSON.stringify({
-            tracker : visitor.tracker,
-            flag: visitor.isBlocked ? 1 : 2
-          }))}
+        if(visitor){
+            localStorage.setItem('store-' + window.location.hostname, JSON.stringify({
+                tracker : visitor.tracker,
+                flag: visitor.isBlocked ? 1 : 2
+            }))
+        }
+        
     }, [visitor])
+    useEffect(()=>{
+        if(storeData)localStorage.setItem('storeData', JSON.stringify(storeData))
+        else localStorage.removeItem('storeData')
+    }, [storeData])
     // default context value
     const defaultStoreValue={
         theme,
@@ -138,10 +216,12 @@ const StoreContextProvider=({children})=>{
         ordersData, 
         setOrdersData,
         visitor,
-        setVisitor
+        setVisitor,
+        language,
     }
     return(
         <StoreContext.Provider value={defaultStoreValue}>
+            <FacebookPixel pixelId={storeData.facebookPixelId} />
             <div style={{display: "flex", flexDirection: 'column', minHeight:'100%'}}  id='app'>
                 { storeData && children} 
             </div>

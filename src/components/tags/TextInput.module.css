@@ -27,25 +27,3 @@
 .placeholder-exist{
     padding: 6px 8px !important;
 }
-
-.input {
-    display: block;
-    position: relative;
-    padding: 6px 8px;
-    font-size: 16px;
-    margin: 0;
-    background-clip: padding-box;
-    border: 1px solid var(--primary-fading-color);
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    position: relative;
-    white-space: nowrap; /* Prevents the text from wrapping to the next line */
-    overflow: hidden; /* Ensures that the overflow text is hidden */
-    text-overflow: ellipsis; /* Adds the ellipsis at the end of the text */
-    width: 100%;
-    border-radius: var(--border-radius-2)
-}
-
-.input:focus {
-    border-color: var(--primary-color);
-    outline: 0;
-  } 

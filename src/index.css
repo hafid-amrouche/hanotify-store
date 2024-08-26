@@ -13,17 +13,12 @@
   background-color: var(--primary-color);
   color: #fff;
 }
-:root{
- --border-radius-1: 4px;
- --border-radius-2: 8px;
- --border-radius-3: 12px
-}
 
 *{
   margin: 0;
   padding: 0;
-  user-select: none;
-  -webkit-user-select: none;
+  /* user-select: none; */
+  /* -webkit-user-select: none; */
   box-sizing: border-box;
   font-family: 'Cairo', sans-serif;
 }
@@ -102,4 +97,46 @@ input{
   white-space: nowrap; /* Prevents the text from wrapping to the next line */
   overflow: hidden; /* Ensures that the overflow text is hidden */
   text-overflow: ellipsis; /* Adds the ellipsis at the end of the text */
+}
+
+.input {
+  display: block;
+  position: relative;
+  padding: 6px 8px;
+  font-size: 16px;
+  margin: 0;
+  background-clip: padding-box;
+  border: 1px solid var(--primary-fading-color);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  position: relative;
+  white-space: nowrap; /* Prevents the text from wrapping to the next line */
+  overflow: hidden; /* Ensures that the overflow text is hidden */
+  text-overflow: ellipsis; /* Adds the ellipsis at the end of the text */
+  width: 100%;
+  border-radius: var(--border-radius-2)
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  outline: 0;
+} 
+input{
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+@keyframes scale-animation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+.jiggle {
+  animation: scale-animation 500ms infinite alternate;
+}
+
+[disabled]{
+  pointer-events: none !important; /* Disable any pointer events (clicks, hovers, etc.) */
 }
