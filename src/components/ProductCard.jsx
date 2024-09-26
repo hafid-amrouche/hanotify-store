@@ -12,10 +12,11 @@ const ProductCard = ({product}) => {
             border: '1px solid var(--border-color)',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: 'var(--border-radius-2)'
+            borderRadius: 'var(--border-radius-2)',
+            width: 152
         }}
         className='hover-scale'
-        to={`/redirect?redirect=/products/${product.slug}/${product.id}`}
+        to={`/redirect?redirect=/products/${product.slug}/${product.product_id}`}
     >
         <LazyImage
             src={product.image || storeData.logo}

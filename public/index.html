@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ lang }}" dir="{{dir}}">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>React App</title>
+    <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
+
+    <script>
+      window.storeData = JSON.parse('{{ store|escapejs }}');
+      var product = '{{ product|escapejs }}'
+      if (product){
+        window.productData = JSON.parse(product);
+      }
+        
+    </script>
+
+    <!-- Open Graph Meta Tags for SEO -->
+    <title>{{title}}</title>
+    <meta property="og:title" id="meta-title" content="{{title}}">
+    <meta name="description" id="description" content="{{description}}">
+    <meta property="og:description" id="meta-descrition" content="{{description}}">
+
+    <meta property="og:image"  id="meta-image"  content="{{image}}">
+    <link rel="icon" id="favicon-link" type="image/x-icon" href="{{ favicon }}">
+
+    <meta property="og:url" id="meta-url" content="{{ url }}">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

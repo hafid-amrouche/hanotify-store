@@ -1,5 +1,5 @@
 .checked{
-    transform: rotate(180deg);
+    transform: rotate(-90deg);
 }
 .icon{
     transition: transform 300ms ease-in;

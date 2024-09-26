@@ -3,7 +3,7 @@ import classes from './Select.module.css'
 import ClickOutsideComponent from '../ClickOutsideComponent'
 import { adjustScrollPosition } from '../../utils/utils'
 
-const Select = ({options, setSelectedOption, selectedOption, keyExtractor, containerClassName, ...props}) => {
+const Select = ({options, setSelectedOption, selectedOption, keyExtractor, containerClassName, error, ...props}) => {
   const [dropDownshown, setDropdownShown] = useState(false)
   const clickHandler=(option)=>{
     setDropdownShown(false)
@@ -17,8 +17,8 @@ const Select = ({options, setSelectedOption, selectedOption, keyExtractor, conta
 
   return (
     <ClickOutsideComponent className={containerClassName} onClickOutside={()=>setDropdownShown(false)} listeningCondintion={dropDownshown} {...props} >
-      <div className={'p-relative cursor-pointer '}>
-        <div className={classes['select-container']} onClick={()=>setDropdownShown(state=>!state)}>
+      <div className={'p-relative cursor-pointer'}>
+        <div className={classes['select-container'] + (error && !dropDownshown ? ' error small-jiggle' : '')} onClick={()=>setDropdownShown(state=>!state)}>
           <h4 className='flex-1 color-primary cut-text'>{selectedOption.label}</h4>
           <i className={`fa-solid fa-chevron-${dropDownshown ? 'up' : 'down'} color-primary`} ></i>
         </div>

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 
-const FacebookPixel = ({ pixelId }) => {
+const FacebookPixel = ({ facebookPixelsId }) => {
+  
   useEffect(() => {
-    if (pixelId) {
-      // Initialize Facebook Pixel script
+    // Initialize Facebook Pixel script
       (function(f, b, e, v, n, t, s) {
         if (f.fbq) return;
         n = f.fbq = function() {
@@ -22,20 +22,24 @@ const FacebookPixel = ({ pixelId }) => {
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
       // Initialize Pixel
-      window.fbq('init', pixelId);
-      window.fbq('track', 'PageView');
-    }
-  }, [pixelId]);
+      facebookPixelsId.map(pixelId=>window.fbq('init', pixelId)) 
+    
+  }, [facebookPixelsId]);
 
   return (
     <noscript>
-      <img
-        height="1"
-        width="1"
-        style={{ display: 'none' }}
-        src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-        alt="Facebook Pixel"
-      />
+      {
+        facebookPixelsId.map(pixelId=>(
+          <img
+            key={pixelId}
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+            alt="Facebook Pixel"
+          />
+        )) 
+      }
     </noscript>
   );
 };

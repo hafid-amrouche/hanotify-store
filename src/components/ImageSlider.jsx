@@ -1,34 +1,48 @@
-import React, { useEffect, memo, useState } from 'react';
+import React, { useEffect, memo, useRef } from 'react';
 import './ImageSlider.css'; // Style file for ImageSlider (you can customize this)
 import { useProductContext } from '../pages/product-page/store/product-context';
 import { useStoreContext } from '../store/store-context';
 import LazyLoadCustiom from './LazyLoadCustiom';
+import useGoBackOnePAth from '../hooks/useGoBackOnePath'
+import { useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 
-const ImageSlider = memo(() => {
+const ImageSlider = memo(({fullscreen=false}) => {
   const {currentImage, setCurrentImage, productData} = useProductContext()
+  
   const {galleryImages} = productData
   const images = galleryImages.map((image, index)=>({
     url: image,
     id: index
   }))
-  const [fullscreen, setFullscreen] = useState(false);
+
+
   const nextSlide = () => {
-    const index = ((images.findIndex(obj => obj.id === currentImage.id)) + 1 )% images.length;
-    setCurrentImage(images[index]);
+    const imageIndex = images.findIndex(obj => obj.id === currentImage.id)
+    const newIndex = imageIndex <= images.length -2 ? imageIndex + 1 : imageIndex   
+    setCurrentImage(images[newIndex]);
+    swiperRef.current.swiper.slideTo(newIndex)
   };
 
   const prevSlide = () => {
-    let index = ((images.findIndex(obj => obj.id === currentImage.id)) + images.length - 1 )% images.length;
-    setCurrentImage(images[index]);
+    const imageIndex = images.findIndex(obj => obj.id === currentImage.id)
+    const newIndex = imageIndex >= 1 ? imageIndex - 1 : 0
+    setCurrentImage(images[newIndex]);
+    swiperRef.current.swiper.slideTo(newIndex)
   }
 
+  const goBackOnePath = useGoBackOnePAth()
+  const navigate = useNavigate()
   const toggleFullScreen = ()=>{
-    setFullscreen(state=>!state)
+    if (fullscreen) goBackOnePath()
+    else navigate('gallery')
   }
 
   const handleDotClick = (id) => {
     setCurrentImage(images.find(image=>image.id === id));
+    swiperRef.current.swiper.slideTo(id)
   };
 
   useEffect(()=>{
@@ -45,37 +59,104 @@ const ImageSlider = memo(() => {
   const { language }= useStoreContext()
   const rtl = language === 'ar' 
 
+  const dotContainerRef = useRef(null);
+
+  useEffect(() => {
+    const dotContainer = dotContainerRef.current;
+    const targetElement = document.getElementById(`small-image-${currentImage.id}`);
+
+    if (targetElement && dotContainer) {
+      const dotContainerWidth = dotContainer.offsetWidth;
+      const dotElementWidth = targetElement.offsetWidth;
+      const dotElementLeft = targetElement.offsetLeft;
+
+      // Calculate the scroll position to center the element
+      const dotScrollPosition = dotElementLeft - (dotContainerWidth / 2) + (dotElementWidth / 2);
+
+      dotContainer.scroll({
+        left: dotScrollPosition,
+        behavior: 'smooth', // Smooth scroll to the new position
+      });
+    }
+
+  }, [currentImage]); // Trigger the effect when imageIndex changes
+
+  const handleSlideChange = (swiper) => {
+    setCurrentImage(images.find(image=>image.id === swiper.activeIndex)) // swiper.activeIndex gives the current slide index
+  };
+  const swiperRef = useRef()
   return (
-    <div id="image-slider" className={`image-slider ${fullscreen ? 'fullscreen' : ''}`}>
-      <div className="slides" key={currentImage.url}>
-            <LazyLoadCustiom
-              className={`slide cursor-pointer ${fullscreen ? 'full-screen-image' : ''}`}
-              style={{ backgroundImage: `url(${currentImage.url})` }}
-              onClick={()=>setFullscreen(true)}
-              id='gallery-image-container'
-            />
-          <button className={rtl ? ' next' : 'prev' } onClick={prevSlide}>&#10094;</button>
-          <button className={rtl ? ' prev' : 'next'}  onClick={nextSlide}>&#10095;</button>
-        <i className={ (fullscreen ? 'fa-solid fa-expand' : 'fa-solid fa-compress') + ' fullscreen-btn' } onClick={toggleFullScreen}></i>
-      </div>
-      <div className="dots d-flex flex-nowrap overflow-x-auto">
-        {images.map((image) => (
-          <div key={image.id} className={`${image.id === currentImage.id ? 'active' : ''}`} style={{borderRadius: 'var(--border-radius-1)'}}>
-            <LazyLoadCustiom>
-              <span
-                className='dot'
-                onClick={() => handleDotClick(image.id)}
-                style={{
-                  backgroundImage: `url(${image.url})`
+    <div 
+      id="image-slider" className={`image-slider ${fullscreen ? 'fullscreen' : ''}`}
+    >
+        <div
+          className="slides" 
+        >
+              <Swiper
+                className="mySwiper"
+                onClick={()=>!fullscreen && navigate('gallery')}
+                onSlideChange={handleSlideChange}
+                ref={swiperRef}
+                initialSlide={currentImage.id}
+                grabCursor={true}
+                style={{ 
+                  height: '100%',
+                  width: '100%',
                 }}
-              />
-            </LazyLoadCustiom>
-          </div>
-            
-        ))}
-      </div>
+              >
+                {images.map((image, index)=>(
+                  <SwiperSlide
+                    key={index}
+                    className={`${fullscreen ? 'full-screen-image' : ''} flex-shrink-0`}
+                    style={{ 
+                      backgroundImage: `url(${image.url})` ,
+                      height: '100%',
+                      width: '100%',
+                      backgroundSize: fullscreen ? undefined : 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      flexShrink: 0
+                    }}
+                  />
+                ))}
+              </Swiper>
+            <button className={rtl ? ' next' : 'prev' } onClick={prevSlide}>&#10094;</button>
+            <button className={rtl ? ' prev' : 'next'}  onClick={nextSlide}>&#10095;</button>
+          <i className={ (fullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand') + ' fullscreen-btn' } onClick={toggleFullScreen}></i>
+        </div>
+        <hr style={{width: '100%', borderTop: 0}} className='border-color-primary-fiding'/>
+        <div 
+          className="dots d-flex flex-nowrap overflow-x-auto"
+          ref={dotContainerRef}
+        >
+          {images.map((image) => (
+            <div key={image.id} className={`${image.id === currentImage.id ? 'active' : ''}`} style={{borderRadius: 'var(--border-radius-1)'}} id={`small-image-${image.id}`}>
+              <LazyLoadCustiom>
+                <span
+                  className='dot'
+                  onClick={() => handleDotClick(image.id)}
+                  style={{
+                    backgroundImage: `url(${image.url})`
+                  }}
+                />
+              </LazyLoadCustiom>
+            </div>
+              
+          ))}
+        </div>        
     </div>
   );
 })
 
 export default ImageSlider;
+
+
+
+
+
+
+
+
+
+
+

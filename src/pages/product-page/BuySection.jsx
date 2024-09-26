@@ -1,15 +1,14 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { isNum, translaste } from '../../utils/utils'
+import { checkHasEnoughTimePassed, isDifferenceMoreThan100Hours, isNum, parseFullName, translaste } from '../../utils/utils'
 import BuyButton from '../../components/BuyButton'
 import classes from './BuySection.module.css'
 import { apiUrl } from '../../constants/Urls'
 import Select from '../../components/tags/Select'
 import TextInput from '../../components/tags/TextInput'
 import Loader from '../../components/Loader'
-import Dialog from '../../components/tags/Dialog'
 import {useStoreContext} from '../../store/store-context'
 import Accordiant from '../../components/Accordiant'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const NoteSection = ({setClientNote, showCN, setShowCN})=>{
     useEffect(()=>{
@@ -26,39 +25,19 @@ const NoteSection = ({setClientNote, showCN, setShowCN})=>{
     )
 }
 
-const ThankYouPage=({close, totalPrice})=>{
-    const {storeData} = useStoreContext()
-    const {id} = useParams()
-    console.log(storeData.facebookPixelId)
-    useEffect(()=>{
-        if (storeData.facebookPixelId) {
-            window.fbq('track', 'Purchase', {
-                content_ids: [id], // Unique identifier for the order
-                content_type: 'product',
-                value: totalPrice, // Total value of the purchase
-                currency: 'DZD' // Currency of the purchase
-            });
-        }
-    }, [])
-    return(
-        <div style={{
-            width: 'min(90vw , 400px)',
-            padding: 20,
-            backgroundColor: 'var(--background-color)',
-            borderRadius: 'var(--border-radius-2)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 16
-        }}>
-            <h3 className='color-primary text-center'>{ translaste('Your order have been recieved') }</h3>
-            <BuyButton onClick={close}>{ translaste('Exit') }</BuyButton>
-        </div>
-    )
-}
-
 const BuySection = memo(({productData}) => {
-    const {storeData} = useStoreContext()
-    const [selectedShipping, setSelectedShipping] = useState(productData.shippingCostByState[0])
+    const [shippingCostByStateList, setShippingCostByStateList] = useState([
+        {
+            cost: 0,
+            costToHome: 0,
+            label: translaste('State'),
+            id: null
+        },
+        ...productData.shippingCostByState
+    ])
+
+    const {storeData, addOrder, orders} = useStoreContext()
+    const [selectedShipping, setSelectedShipping] = useState(shippingCostByStateList[0])
 
     const [quantity, setQuantity] = useState(1)
     const changeQuantiy=(delta)=>{
@@ -81,7 +60,10 @@ const BuySection = memo(({productData}) => {
             setStateCities(cities)
             setCity(cities[0])
         }
-        upadateCities()
+        if(selectedShipping.id) {
+            upadateCities()
+            setShippingCostByStateList(shippingCostByStateList=>shippingCostByStateList.filter(shippingCostByState=>shippingCostByState.id))
+        }
     }, [selectedShipping])
 
     const [shippigAddress, setShippingAddress]=  useState('')
@@ -92,7 +74,6 @@ const BuySection = memo(({productData}) => {
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
-    const [orderConfirmed, setOrderConfirmed] = useState(false)
     const {ordersData, setOrdersData} = useStoreContext()
     const orderId = ordersData[productData.productId]?.orderId
     const orderToken = ordersData[productData.productId]?.orderToken
@@ -102,9 +83,11 @@ const BuySection = memo(({productData}) => {
 
     const makeOrder=async()=>{
         try{
-            if(!visitor.isBlocked){ 
-                if (!hasSecondPassSinceLastRequest.current) return
+            const productLastOrder = orders[productId]
+            const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
 
+            if(!visitor.isBlocked && enoughTimePassed){ 
+                if (!hasSecondPassSinceLastRequest.current) return
                 hasSecondPassSinceLastRequest.current = false
                 setTimeout( ()=>{
                     hasSecondPassSinceLastRequest.current = true
@@ -137,19 +120,55 @@ const BuySection = memo(({productData}) => {
                             [productData.productId]: data
                         }))
                     }
-                }))}
+               }))}
         }catch(err){
             console.log(err)
         }     
     }
     
-    const disabled = !fulllName.trim() || !(phoneNumber.length >= 10)
+    const navigate= useNavigate()
+    const phoneNumberValid = (phoneNumber.length >= 9 ) && (()=>{
+        if(['05', '06', '07'].includes(phoneNumber.slice(0,2))){
+            return phoneNumber.length === 10
+        }
+        else return true
+    })()
+
+    const fullNameValid = fulllName.trim()
+    const enable = fullNameValid && phoneNumberValid && selectedShipping.id
+
+    const {id: productId} = useParams()
+
+    const productLastOrder = orders[productId]
+    const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
 
     const confirmOrder=async()=>{
         setLoading(true)
         setError(false)
+        const order = {
+            state_id: selectedShipping.id,
+            order_id: orderId,
+            order_token: orderToken,
+            city_id: city.id,
+            full_name: fulllName,
+            combination_index: combinationIndex, //
+            quantity, 
+            tracker: visitor.tracker,
+            shipping_address: shippigAddress,
+            client_note: clientNote,
+            shippingToHome: selectShippingType === 'costToHome',
+            ...parseFullName(fulllName.trim())
+        }
+        const thankyouLink = `thank-you?order=${JSON.stringify({
+            index: combinationIndex,
+            productPrice: productData.price,
+            totalPrice,
+            quantity, 
+            shippingCost : selectedShipping[selectShippingType],
+            etp: enoughTimePassed,
+        })}`
         try{
-            if(!visitor.isBlocked){ 
+            if(!visitor.isBlocked && enoughTimePassed ){ 
                 hasSecondPassSinceLastRequest.current = false
                 setTimeout( ()=>{
                     hasSecondPassSinceLastRequest.current = true
@@ -159,51 +178,36 @@ const BuySection = memo(({productData}) => {
                     headers: {
                         'Content-type' : 'application.json',
                     },
-                    body: JSON.stringify({
-                        state_id: selectedShipping.id,
-                        order_id: orderId,
-                        order_token: orderToken,
-                        city_id: city.id,
-                        full_name: fulllName,
-                        combination_index: combinationIndex, //
-                        quantity, 
-                        tracker: visitor.tracker,
-                        shipping_address: shippigAddress,
-                        client_note: clientNote
-                    })
+                    body: JSON.stringify(order)
                 })
                 setFullName('')
                 setphoneNumber('')
                 setShippingAddress('')
                 setShowCN(false)
-                setOrderConfirmed(true)
                 setOrdersData(ordersData=>{
                     const newData = {...ordersData}
                     delete newData[productData.productId]
                     return newData
                 })
-                setLoading(false)
+                addOrder(productId)
+                navigate(thankyouLink)
             }
             else{
                 setTimeout(()=>{
                     setFullName('')
                     setphoneNumber('')
-                    setOrderConfirmed(true)
                     setLoading(false)
                     setClientNote('')
-                }, 800)
+                    navigate(thankyouLink)
+                }, 1200)
             } 
         }
-            
         catch(err){
             console.log(err)
             setError(true)
             setLoading(false)
         } 
-        
-    }
-    const dialogRef = useRef()
-    
+    }    
     
     const shippingToHomeExist = selectedShipping.costToHome !== null
     const shippingToOfficeExist = selectedShipping.cost !== null
@@ -221,37 +225,32 @@ const BuySection = memo(({productData}) => {
             return
         }
         setError(false)
-        if(phoneNumber.length >=10) makeOrder()  
+        if(phoneNumberValid) makeOrder()  
     }, [city, fulllName, phoneNumber, selectShippingType, combinationIndex ])
 
     const [clientNote, setClientNote]=  useState('')
     const [showCN, setShowCN] = useState(false)
+
+    const setPhoneNumber =(value)=>{
+        if (value ==='' || (value.startsWith('0') && isNum(value[value.length-1]))) setphoneNumber(value)   
+    }
     return (
         <div className={classes['container'] + ' border p-1'} style={{ backgroundColor: 'var(--primary-transparent-color)', borderRadius: 'var(--border-radius-3)' }}>
-            { orderConfirmed && 
-                <Dialog open={orderConfirmed} ref={dialogRef} close={ ()=>setOrderConfirmed(false) }>
-                    <ThankYouPage totalPrice={totalPrice} close={()=>dialogRef.current?.close()} />    
-                </Dialog> 
-            }
             <div className={classes['container-info']}>
                 <div className='d-flex align-items-center'>
                     <div className='col-6 p-1'>
-                        <TextInput label={translaste('Full name')} value={fulllName} onChange={(value)=>setFullName(value)} />
+                        <TextInput error={!fullNameValid} label={translaste('Full name')} value={fulllName} onChange={(value)=>setFullName(value)} />
                     </div>
                 
                     <div className='col-6 p-1'>
-                        <TextInput label={translaste('Phone number')} type='tel' value={phoneNumber} maxLength={10} onChange={(value)=>{
-                            if (value ==='' || (value.startsWith('0') && isNum(value[value.length-1]))) setphoneNumber(value)    
-                        }}/>
+                        <TextInput label={translaste('Phone number')} error={!phoneNumberValid  && fullNameValid} type='tel' value={phoneNumber} maxLength={10} onChange={setPhoneNumber}/>
                     </div>
                     <div className='col-6 p-1'>
-                        <Select options={productData.shippingCostByState} setSelectedOption={setSelectedShipping} selectedOption={selectedShipping} keyExtractor={option=>option.id}/>
+                        <Select  error={phoneNumberValid && fullNameValid && !selectedShipping.id} options={shippingCostByStateList} setSelectedOption={setSelectedShipping} selectedOption={selectedShipping} keyExtractor={option=>option.id}/>
                     </div>
-                    <div className='col-6 p-1'>
-                        { selectShippingType==='cost' ? 
-                        <></>
-                        :<Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>}
-                    </div>
+                    { <div className='col-6 p-1'>
+                        { selectShippingType!=='cost' && stateCities.length > 0 && selectedShipping.id &&  <Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>}
+                    </div>}
                     { storeData.askForAddress && <div className='col-12 p-1'>
                         <TextInput label='Address' value={shippigAddress} onChange={(value)=>setShippingAddress(value)} />
                     </div>}
@@ -260,7 +259,7 @@ const BuySection = memo(({productData}) => {
             </div>
             <div className={'my-2'}>
                 
-                { (shippingToHomeExist || shippingToOfficeExist) && <div>
+                { (shippingToHomeExist || shippingToOfficeExist) && selectedShipping.id && <div>
                         <h4 className='p-1'>{ translaste('Shipping to') }</h4>
                         <div className='col-12 p-1 d-flex gap-2' >
                            {selectedShipping.costToHome!==null && <BuyButton  style={{maxWidth: '50%'}} className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='cost'} onClick={()=>setSelectShippingType('costToHome')}>
@@ -271,7 +270,7 @@ const BuySection = memo(({productData}) => {
                                     }
                                 </h4>
                             </BuyButton>}
-                           {selectedShipping.cost!==null && <BuyButton  style={{maxWidth: '50%'}} className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='costToHome'} onClick={()=>setSelectShippingType('cost')}>
+                            {selectedShipping.cost!==null && <BuyButton  style={{maxWidth: '50%'}} className='flex-1 gap-1 justify-content-between' outline={selectShippingType==='costToHome'} onClick={()=>setSelectShippingType('cost')}>
                                 { `${translaste('Office')}`}: 
                                 <h4>
                                     {
@@ -302,7 +301,7 @@ const BuySection = memo(({productData}) => {
                     </div>
                 </div> 
                 <div className='col-6 p-1'>
-                    <BuyButton disabled={disabled || loading} onClick={()=>confirmOrder(orderId)}>
+                    <BuyButton disabled={!enable || loading} onClick={()=>confirmOrder(orderId)}>
                         {translaste('Confirm order')}
                         { loading && <Loader diam={28}/>}
                     </BuyButton>

@@ -84,7 +84,8 @@ input{
   margin-bottom: 8px;
 }
 .border{
-  border:1px var(--primary-fading-color) solid
+  border:1px var(--primary-fading-color) solid;
+  border-radius: var(--border-radius-2);
 }
 .border-primary-v{
   border-top:1px var(--primary-color) solid;
@@ -109,7 +110,6 @@ input{
   border: 1px solid var(--primary-fading-color);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   position: relative;
-  white-space: nowrap; /* Prevents the text from wrapping to the next line */
   overflow: hidden; /* Ensures that the overflow text is hidden */
   text-overflow: ellipsis; /* Adds the ellipsis at the end of the text */
   width: 100%;
@@ -125,6 +125,19 @@ input{
   color: var(--text-color);
 }
 
+
+.py-3{
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+@keyframes scale-animation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
 @keyframes scale-animation {
   0% {
     transform: scale(1);
@@ -136,7 +149,46 @@ input{
 .jiggle {
   animation: scale-animation 500ms infinite alternate;
 }
+@keyframes small-scale-animation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+.small-jiggle {
+  animation: small-scale-animation 500ms infinite alternate;
+}
 
 [disabled]{
   pointer-events: none !important; /* Disable any pointer events (clicks, hovers, etc.) */
+}
+.lh-12{
+  line-height: 1.2;
+}
+.lh-14{
+  line-height: 1.4;
+}
+
+.error,
+.error *{
+  border-color: red !important;
+  color: red !important;
+}
+.error:focus,
+.error:focus {
+  border-color: red;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+}
+
+.hode-scroll {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+}
+
+.hode-scroll::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }

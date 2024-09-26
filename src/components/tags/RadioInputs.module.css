@@ -9,6 +9,7 @@
     outline: none; /* Removes outline */
     cursor: pointer; /* Shows cursor on hover */
     position: relative;
+    margin-top: 2px;
 }
 .radio[type="radio"]:checked::after {
     content: ''; /* Shows dot inside */

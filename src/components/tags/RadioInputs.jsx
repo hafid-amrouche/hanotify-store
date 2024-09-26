@@ -2,15 +2,14 @@ import React from 'react'
 import classes from './RadioInputs.module.css'
 
 const RadioInputs = ({className, name, options, selectedRadioOption, setSelectedRadioOption, ...props}) => {
-  console.log(selectedRadioOption)
   const clickHandler =(option)=>{
     setSelectedRadioOption(option)
   }
   return (
-    <div>
+    <div className='d-flex flex-column gap-2'>
       {
         options.map(option=>(
-          <div className='d-flex align-items-center gap-2' key={option.id}>
+          <div className='d-flex gap-2 flex-nowrap align-items-top'  key={option.id}>
             <input 
               className={`${className || ''} ${classes.radio}`} 
               {...props} 
@@ -19,8 +18,9 @@ const RadioInputs = ({className, name, options, selectedRadioOption, setSelected
               id={name+option.id} 
               checked={selectedRadioOption.id === option.id}  
               onChange={()=>clickHandler(option)}
+              style={{flexShrink: 0}}
             />
-            <label htmlFor={name+option.id}  >{option.label}</label>
+            <label className='lh-14' htmlFor={name+option.id}  >{option.label}</label>
           </div>
         ))
         }

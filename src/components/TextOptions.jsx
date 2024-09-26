@@ -6,7 +6,7 @@ const TextOptions = ({options, selectedTextOption, setSelectedTextOption}) => {
     <div className={classes.container}>
       {
         options.map(option=>(
-            <p key={option.id} className={`${classes.text} ${selectedTextOption.id === option.id ? classes.selected : ''}`} onClick={()=>setSelectedTextOption(option)}>{ option.label }</p>
+            <div key={option.id} className={`${classes.text} ${selectedTextOption.id === option.id ? classes.selected : ''}`} onClick={()=>setSelectedTextOption(option)}>{ option.label }</div>
         )) 
       }
     </div>

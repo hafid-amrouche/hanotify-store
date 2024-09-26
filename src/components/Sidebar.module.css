@@ -29,7 +29,7 @@
 /* Keyframes for sliding the sidebar in from the left */
 @keyframes slide-in {
   from {
-    transform: translateX(-100%);
+    transform: translateX(var(--lang--100));
   }
   to {
     transform: translateX(0%);
@@ -42,7 +42,7 @@
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(var(--lang--100));
   }
 }
 

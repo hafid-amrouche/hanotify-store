@@ -1,15 +1,15 @@
 import React, { memo } from 'react'
 import { useProductContext } from './store/product-context'
-import { capitalizeFirstLetter, translaste } from '../../utils/utils'
+import { translaste } from '../../utils/utils'
 
 const ProductIntro = memo(() => {
   const {productData} =useProductContext()
   return (
     <div>
-        <h2 style={{lineHeight:1.2}}>
-          {capitalizeFirstLetter(productData.title)}
+        <h2 style={{lineHeight:1.4}}>
+          {productData.title}
 
-          { productData.discount && <span>
+          { productData.discount &&
             <span style={{
               backgroundColor: 'var(--primary-color)',
               color: 'var(--background-color)',
@@ -19,7 +19,7 @@ const ProductIntro = memo(() => {
               whiteSpace:'nowrap',
               borderRadius: 'var(--border-radius-2)'
             }}>{ productData.discount }</span>
-          </span> }
+          }
         </h2>   
         { productData.miniDescription &&  <p style={{lineHeight:1.4, marginTop:8}}>
           {productData.miniDescription}

@@ -4,8 +4,9 @@ import TextOptions from '../../components/TextOptions'
 import CircleOptions from '../../components/CircleOptions'
 import Select from '../../components/tags/Select'
 import RadioInputs from '../../components/tags/RadioInputs'
-import { useProductContext } from './store/product-context'
 import { capitalizeFirstLetter } from '../../utils/utils'
+
+
 
 function calculateIndex(selectedOptions, optionsCount) {
   // Calculate a unique index for the combination of selected options
@@ -20,8 +21,7 @@ function calculateIndex(selectedOptions, optionsCount) {
   return index;
 }
 
-const VarinatsSection = memo(() => {
-  const {productData, setProductData} = useProductContext()
+const VarinatsSection = memo(({productData, setProductData}) => {
   const variantsList = Object.values(productData.variants)
   const defaultSelectedOptions = []
   const variantsOptionsNumList = []

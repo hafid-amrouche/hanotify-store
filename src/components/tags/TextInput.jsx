@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import classes from './TextInput.module.css'
+import { isElementFocused } from '../../utils/utils'
 
 const TextInput = forwardRef(({
   className= '', 
@@ -51,8 +52,9 @@ const TextInput = forwardRef(({
   const inputValue= value == null ? innerValue : value
   const raiseLabel = (labelOnTop) ||( inputValue !== '')
 
+  const jiggleClassName = error && inputRef.current && !isElementFocused(inputRef.current) && 'small-jiggle' 
   return (
-    <div className={containerClassName} style={{borderRadius: 'var(--border-radius-2)'}}>
+    <div className={containerClassName + ' ' + jiggleClassName} style={{borderRadius: 'var(--border-radius-2)'}}>
       <div className='d-flex p-relative align-center ' style={{borderRadius: 'var(--border-radius-2)'}}>
         <div className='d-flex p-relative align-items-center flex-1' style={{borderRadius: 'var(--border-radius-2)'}}>
           <input value={inputValue} style={{padding: '12px 8px 4px 8px', ...style}} onChange={(e)=>changeHandler(e.target.value)} placeholder={placeholder} onFocus={focusHandler} onBlur={blueHandler} type={innerType} className={ `input ${type==='password' ? classes['password'] : ''} ${error ? 'error' : ''} ${placeholder ? classes['placeholder-exist'] : ''} ${className || ''}`} ref={inputRef} {...props} />
@@ -60,7 +62,7 @@ const TextInput = forwardRef(({
         </div>
         {type == 'password' && <i onClick={clickHandler} className={'fa-solid fa-eye' + (innerType === 'password' ? ' ' : '-slash ' ) + classes['eye']} />}
       </div>
-      { error && <h4 className='error mt-2'>{error}</h4>}
+      {  (error instanceof String) && <h4 className='error mt-2'>{error}</h4>}
     </div>
       
 

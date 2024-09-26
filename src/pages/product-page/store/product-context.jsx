@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { createContext } from "react";
-import { filesUrl } from '../../../constants/Urls';
-import {useNavigate, useParams} from 'react-router-dom'
+import { apiUrl, filesUrl } from '../../../constants/Urls';
+import {Outlet, useNavigate, useParams} from 'react-router-dom'
 import states from '../../../json/states.json'
 import { translaste } from '../../../utils/utils';
 import BuyButton from '../../../components/BuyButton';
@@ -19,7 +19,6 @@ const defaultProductData = {
     discount: '',
     shippingCostByState: [] ,
     variants: {},
-    variantsCombinations: [],
     pricesAndImagesList: [],
     combinationIndex: 0,
     richText: '',
@@ -34,7 +33,7 @@ const ProductContext = createContext({
 })
 
 
-const ProductContextProvider=({children})=>{
+const ProductContextProvider=()=>{
     const [productData, setProductData] = useState(defaultProductData)
     const [error, setError] = useState(false)
     const [currentImage, setCurrentImage] = useState(null)
@@ -43,9 +42,14 @@ const ProductContextProvider=({children})=>{
     const {language} = useStoreContext()
     const lang_prefix = language === 'ar' ? '_ar': '' 
     useEffect(()=>{
-        const fetchProduct=async()=>{
-          setError(false)
-          try{
+      const fetchProduct=async()=>{
+        setError(false)
+        try{
+          let data;
+          if (window.productData){
+            data = window.productData
+          }
+          else{
             const response = await fetch(
               filesUrl + `/get-product?product_id=${productId}`,
               {
@@ -57,46 +61,59 @@ const ProductContextProvider=({children})=>{
               setError(true)
               return;
             }
-            
-            const data = await response.json()
-            let shippingCostByState = data.shippingCostByState
-            shippingCostByState = shippingCostByState.length > 0 ? shippingCostByState.map(cost=>{
-              const state = states.find(state=>state.id === cost.id)
-              return({
-                  ...cost,
-                  cost: cost.cost,
-                  costToHome: cost.costToHome,
-                  label: `${state.code} - ${state['name' + lang_prefix]}`,
-              })
-            }): states.map(state=>({
-              cost: 0,
-              costToHome: 0,
-              label: `${state.code} - ${state['name' + lang_prefix]}}`,
-              id :state.id
-            }))
-            setProductData(productData=>({
-                ...productData,
-                ...data,
-                shippingCostByState: shippingCostByState,
-            }))
-            if(data.galleryImages?.length>0) setCurrentImage({
-              id:0,
-              url:data.galleryImages[0]
-            })
+          
+            data = await response.json()
           }
-          catch(error){
-            console.log(error)
-          }              
+
+
+          let shippingCostByState = data.shippingCostByState
+          shippingCostByState = shippingCostByState.length > 0 ? shippingCostByState.map(cost=>{
+            const state = states.find(state=>state.id === cost.id)
+            return({
+                ...cost,
+                cost: cost.cost,
+                costToHome: cost.costToHome,
+                label: `${state.code} - ${state['name' + lang_prefix]}`,
+            })
+          }): states.map(state=>({
+            cost: 0,
+            costToHome: 0,
+            label: `${state.code} - ${state['name' + lang_prefix]}`,
+            id :state.id
+          }))
+          
+          setProductData(productData=>({
+              ...productData,
+              ...data,
+              shippingCostByState: shippingCostByState,
+          }))
+          if(data.galleryImages?.length>0) setCurrentImage({
+            id:0,
+            url:data.galleryImages[0]
+          })
+
+          // SEO
+          document.title = data.title || 'Hanotify'
+          document.querySelector('#meta-title').setAttribute('content', data.title || 'Hanotify')
+
+          document.querySelector('#meta-image').setAttribute('content', document.querySelector('#meta-image').getAttribute('content') || (data.galleryImages ? data.galleryImages[0] : ''))
+
+          document.querySelector('#description').setAttribute('content',  data.miniDescription || document.querySelector('#description').getAttribute('content'))
+          document.querySelector('#meta-descrition').setAttribute('content', data.miniDescription  || document.querySelector('#meta-descrition').getAttribute('content'))
         }
-        fetchProduct()
-      }, [])
+        catch(error){
+          console.log(error)
+        }              
+      }
+      fetchProduct()
+    }, [])
     
     
     useEffect(() => {
       // Dynamically import CSS based on the theme
       const loadRichTextCss = async () => {
         if (productData?.richText) {
-          await import('../suneditor-contents.css');
+          await import('../../../css/suneditor-contents.css');
         }
       };
   
@@ -114,16 +131,17 @@ const ProductContextProvider=({children})=>{
       setCurrentImage(func)
     }
 
+    const navigate = useNavigate()
+
     const defaultValue = {
       productData,
       setProductData,
       currentImage,
       setCurrentImage: setCurrentImageWithImagesCount,
     }
-    const navigate = useNavigate()
     return (
         <ProductContext.Provider value={defaultValue}>
-            { productData.productId && children}
+            { productData.productId && <Outlet/>}
             { error && <div className='flex-1 d-flex flex-column gap-2 align-items-center justify-content-center' style={{minHeight: 500, width: '100%'}} >
               <h2 className='color-red'>{ translaste('Wrong link') }</h2>
               <BuyButton outline className='d-flex gap-3' onClick={()=>navigate('/')}>

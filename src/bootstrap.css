@@ -2095,6 +2095,15 @@ html {
         -ms-flex-item-align: stretch !important;
         align-self: stretch !important
     }
+
+    .px-md-4{
+        padding-right: 32px !important;
+        padding-left: 32px !important;
+    }
+    .px-md-2{
+        padding-right: 16px !important;
+        padding-left: 16px !important;
+    }
 }
 
 @media (min-width:992px) {
@@ -2482,6 +2491,9 @@ html {
 .cursor-pointer{
     cursor: pointer;
 }
+.gap-1{
+    gap: 4px;
+}
 .gap-2{
     gap: 8px;
 }
@@ -2518,3 +2530,9 @@ html {
     overflow-x: auto;
     overflow-y: hidden;
 }
+
+.py-0{
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
