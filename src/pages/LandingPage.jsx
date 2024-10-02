@@ -66,12 +66,12 @@ const LandingPage = () => {
                   ...cost,
                   cost: cost.cost,
                   costToHome: cost.costToHome,
-                  label: `${state.code} - ${state.name}`,
+                  label: `${state.code} - ${state.name_ar}`,
               })
             }): states.map(state=>({
               cost: 0,
               costToHome: 0,
-              label: `${state.code} - ${state.name}`,
+              label: `${state.code} - ${state.name_ar}`,
               id :state.id
             }))
             setProductData(productData=>({

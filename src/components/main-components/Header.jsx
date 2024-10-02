@@ -11,7 +11,7 @@ const ButtonWithModal=()=>{
   const {storeData} = useStoreContext()
   return(
     <div>
-      <IconWithHover onClick={buttonClickHandler} iconClass='fa-solid fa-bars' size={28} color={storeData.headerOutlined ? 'var(--primary-color)' : undefined} />
+      <IconWithHover onClick={buttonClickHandler} iconClass='fa-solid fa-bars' size={28} color={storeData.headerOutlined ? 'var(--primary-color)' : 'var(--background-color)'} />
       <SideBar open={open} onClickBackdrop={()=>setOpen(false)} />
     </div>
     

@@ -51,28 +51,27 @@ else{
 if (inDev){
     window.storeData = {
         "id": 43,
-        "primaryColor": "#9c379e",
-        "bordersRounded": false,
+        "primaryColor": "#bca08a",
+        "bordersRounded": true,
         "logo": "http://files.localhost:8080//media//users/58/stores/43/48.png",
         "name": "qsdqd qsdqds",
         "description": "",
         "favicon": null,
-        "headerOutlined": true,
+        "headerOutlined": false,
         "language": "ar",
-        "mode": "auto",
+        "mode": "light",
         "facebookPixelsId": [
             "1734156917355822"
         ],
-        "primaryColorDark": "#9c379e",
+        "primaryColorDark": "#bca08a",
         "footer": "<p style=\"text-align: center\"><span style=\"font-size: 16px;font-family: Comic Sans MS\"><strong>.جميع الحقوق محفوظة لشركة براء ميناج Baraa Ménage l عام 2024</strong></span></p><div class=\"se-component se-image-container __se__float-center\"><figure style=\"width: 107px;\"><p style=\"text-align: center\"><img loading=\"lazy\" src=\"http://files.localhost:8080//media//users/58/stores/43/images/6.webp\" alt=\"\" data-rotate=\"\" data-proportion=\"true\" data-size=\"107px,106px\" data-align=\"center\" data-file-name=\"17136688749101713668869360main.webp\" data-file-size=\"11440\" data-origin=\",\" origin-size=\"640,1000\" style=\"width: 107px; height: 106px;\"></p></figure></div>"
-    };    
+    }  
 }
 
 const themeFromLocaleStorage = localStorage.getItem('theme')
 const themeMode = window.storeData.mode
 
 const defaultOrdersFromLocaleStore = localStorage.getItem('orders') 
-console.log(defaultOrdersFromLocaleStore)
 const defaultOrders = defaultOrdersFromLocaleStore ? JSON.parse(defaultOrdersFromLocaleStore) : {}
 
 const StoreContextProvider=({children})=>{

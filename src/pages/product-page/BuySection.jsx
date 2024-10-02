@@ -80,51 +80,6 @@ const BuySection = memo(({productData}) => {
     const {visitor} = useStoreContext()
 
     const hasSecondPassSinceLastRequest = useRef(true)
-
-    const makeOrder=async()=>{
-        try{
-            const productLastOrder = orders[productId]
-            const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
-
-            if(!visitor.isBlocked && enoughTimePassed){ 
-                if (!hasSecondPassSinceLastRequest.current) return
-                hasSecondPassSinceLastRequest.current = false
-                setTimeout( ()=>{
-                    hasSecondPassSinceLastRequest.current = true
-                }, 1000)
-
-                fetch(apiUrl + ( orderId ? '/orders/update-order' : '/orders/create-order'), {
-                    method: 'POST',
-                    headers: {
-                        'Content-type' : 'application.json',
-                    },
-                    body: JSON.stringify({
-                        phone_number: phoneNumber,
-                        shippig_address: shippigAddress,
-                        product_id: productData.productId,
-                        shippingToHome: selectShippingType === 'costToHome',
-                        state_id: selectedShipping.id,
-                        city_id: city.id,
-                        full_name: fulllName,
-                        combination_index: combinationIndex, //
-                        order_id: orderId,
-                        order_token: orderToken,
-                        tracker: visitor.tracker,
-                        quantity: orderId ? undefined :quantity, 
-                        combination_index: combinationIndex,
-                    })
-                }).then(response=>response.json().then(data=>{
-                    if(ordersData.orderId !== data.orderId){
-                        setOrdersData(ordersData=>({
-                            ...ordersData,
-                            [productData.productId]: data
-                        }))
-                    }
-               }))}
-        }catch(err){
-            console.log(err)
-        }     
-    }
     
     const navigate= useNavigate()
     const phoneNumberValid = (phoneNumber.length >= 9 ) && (()=>{
@@ -138,11 +93,19 @@ const BuySection = memo(({productData}) => {
     const enable = fullNameValid && phoneNumberValid && selectedShipping.id
 
     const {id: productId} = useParams()
+    
+    const shippingToHomeExist = selectedShipping.costToHome !== null
+    const shippingToOfficeExist = selectedShipping.cost !== null
+    const [selectShippingType, setSelectShippingType] = useState(shippingToHomeExist ? 'costToHome' : 'cost')
+    useEffect(()=>{
+        setSelectShippingType(shippingToHomeExist ? 'costToHome' : 'cost')
+    }, [selectedShipping])
 
-    const productLastOrder = orders[productId]
-    const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
+    const totalPrice = productData.price * quantity + selectedShipping[selectShippingType]
 
     const confirmOrder=async()=>{
+        const productLastOrder = orders[productId]
+        const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
         setLoading(true)
         setError(false)
         const order = {
@@ -208,25 +171,6 @@ const BuySection = memo(({productData}) => {
             setLoading(false)
         } 
     }    
-    
-    const shippingToHomeExist = selectedShipping.costToHome !== null
-    const shippingToOfficeExist = selectedShipping.cost !== null
-    const [selectShippingType, setSelectShippingType] = useState(shippingToHomeExist ? 'costToHome' : 'cost')
-    useEffect(()=>{
-        setSelectShippingType(shippingToHomeExist ? 'costToHome' : 'cost')
-    }, [selectedShipping])
-
-    const totalPrice = productData.price * quantity + selectedShipping[selectShippingType]
-
-    const firstCicleDone = useRef(false)
-    useEffect(()=>{
-        if (!firstCicleDone.current){
-            firstCicleDone.current = true
-            return
-        }
-        setError(false)
-        if(phoneNumberValid) makeOrder()  
-    }, [city, fulllName, phoneNumber, selectShippingType, combinationIndex ])
 
     const [clientNote, setClientNote]=  useState('')
     const [showCN, setShowCN] = useState(false)
@@ -234,6 +178,72 @@ const BuySection = memo(({productData}) => {
     const setPhoneNumber =(value)=>{
         if (value ==='' || (value.startsWith('0') && isNum(value[value.length-1]))) setphoneNumber(value)   
     }
+
+    const makeOrder=async()=>{
+        try{
+            const productLastOrder = orders[productId]
+            const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
+
+            if(!visitor.isBlocked && enoughTimePassed){ 
+                fetch(apiUrl + ( orderId ? '/orders/update-order' : '/orders/create-order'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-type' : 'application.json',
+                    },
+                    body: JSON.stringify({
+                        phone_number: phoneNumber,
+                        shippig_address: shippigAddress,
+                        product_id: productData.productId,
+                        shippingToHome: selectShippingType === 'costToHome',
+                        state_id: selectedShipping.id,
+                        city_id: city.id,
+                        full_name: fulllName,
+                        combination_index: combinationIndex, //
+                        order_id: orderId,
+                        order_token: orderToken,
+                        tracker: visitor.tracker,
+                        quantity: orderId ? undefined :quantity, 
+                        combination_index: combinationIndex,
+                    })
+                }).then(response=>response.json().then(data=>{
+                    if(ordersData.orderId !== data.orderId){
+                        setOrdersData(ordersData=>({
+                            ...ordersData,
+                            [productData.productId]: data
+                        }))
+                    }
+               }))}
+        }catch(err){
+            console.log(err)
+        }     
+    }
+
+    useEffect(()=>{
+        setError(false)
+        // on a valid phone number
+        if(!phoneNumberValid) return
+
+        // one request per second
+        if (!hasSecondPassSinceLastRequest.current) return
+        hasSecondPassSinceLastRequest.current = false
+        setTimeout( ()=>{
+            hasSecondPassSinceLastRequest.current = true
+        }, 1000)
+
+        //
+        makeOrder()
+
+    }, [city, fulllName, selectShippingType, combinationIndex ])
+
+    useEffect(()=>{
+        setError(false)
+        // on a valid phone number
+        if(!phoneNumberValid) return
+        //
+        makeOrder()
+
+    }, [phoneNumber])
+
     return (
         <div className={classes['container'] + ' border p-1'} style={{ backgroundColor: 'var(--primary-transparent-color)', borderRadius: 'var(--border-radius-3)' }}>
             <div className={classes['container-info']}>

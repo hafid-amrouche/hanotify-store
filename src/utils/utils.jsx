@@ -227,7 +227,7 @@ export function isDifferenceMoreThan100Hours(time1) {
 
 export const checkHasEnoughTimePassed=(productLastOrder)=>{
   if (inDev) return true
-  let enoughTimePassed = false
+  let enoughTimePassed = true
   if (productLastOrder){
       enoughTimePassed = isDifferenceMoreThan100Hours(productLastOrder.lastOrderTime)
   }
