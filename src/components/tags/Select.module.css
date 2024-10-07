@@ -4,7 +4,7 @@
     align-items: center;
     border: var(--primary-fading-color) 1px solid;
     padding: 8px; 
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
     border-radius: var(--border-radius-2);
 
 }
@@ -12,7 +12,7 @@
 .options-box{
     position: absolute;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
     z-index: 1;
     border-radius: var(--border-radius-2);
 }
@@ -24,11 +24,11 @@
 
 }
 .option{
-    color: var(--primary-color);
+    color: var(--primaryColor);
     padding: 6px 8px;
 }
 .option:hover,
 .option:active{
-    color: var(--background-color);
-    background-color: var(--primary-color);
+    color: var(--backgroundColor);
+    background-color: var(--primaryColor);
 }

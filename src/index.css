@@ -4,13 +4,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000');
 
 ::selection {
-  background-color: var(--primary-color); /* Green color */
+  background-color: var(--primaryColor); /* Green color */
   color: #fff; /* Text color */
 }
 
 /* For older versions of Firefox */
 ::-moz-selection {
-  background-color: var(--primary-color);
+  background-color: var(--primaryColor);
   color: #fff;
 }
 
@@ -26,8 +26,8 @@
 
   width: 100%;
   min-height: 100%;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  color: var(--textColor);
+  background-color: var(--backgroundColor);
   min-height: 100vh;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .color-primary{
-  color: var(--primary-color);
+  color: var(--primaryColor);
 }
 .color-red{
   color: red;
@@ -65,11 +65,11 @@
   overflow: auto;
 }
 
-.hover-scale{
+.scale-on-hover{
   transition: scale 300ms ease-in;
   cursor: pointer;
 }
-.hover-scale:hover{
+.scale-on-hover:hover{
   scale: 1.05;
 }
 a{
@@ -88,8 +88,8 @@ input{
   border-radius: var(--border-radius-2);
 }
 .border-primary-v{
-  border-top:1px var(--primary-color) solid;
-  border-bottom: 1px var(--primary-color) solid
+  border-top:1px var(--primaryColor) solid;
+  border-bottom: 1px var(--primaryColor) solid
 }
 .border-top{
   border-top:1px var(--primary-fading-color) solid;
@@ -117,12 +117,12 @@ input{
 }
 
 .input:focus {
-  border-color: var(--primary-color);
+  border-color: var(--primaryColor);
   outline: 0;
 } 
 input{
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--backgroundColor);
+  color: var(--textColor);
 }
 
 
@@ -191,4 +191,8 @@ input{
 
 .hode-scroll::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Opera */
+}
+
+.primary-dark-on-hover:hover{
+  background-color: var(--primary-dark-color) !important;
 }

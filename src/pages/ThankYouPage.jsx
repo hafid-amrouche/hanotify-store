@@ -125,7 +125,7 @@ const ThankYouPage=()=>{
                 style={{
                     width: 'min(95vw , 600px)',
                     padding: 8,
-                    backgroundColor: 'var(--background-color)',
+                    backgroundColor: 'var(--backgroundColor)',
                     borderRadius: 'var(--border-radius-2)',
                     display: 'flex',
                     flexDirection: 'column',

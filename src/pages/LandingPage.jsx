@@ -102,7 +102,7 @@ const LandingPage = () => {
         { productData.productId && 
           <>
             { productData.richText  && <div className='sun-editor-editable' style={{margin: '0 auto', minHeight: '100vh', maxWidth: '40rem'}} dangerouslySetInnerHTML={{ __html: productData.richText}} />}
-            <div className='p-2' id='buy-section' style={{position: 'absolute', zIndex: 2, backgroundColor: 'var(--background-color)', width: '100%', paddingBottom: 'calc(40vh - 186px)'}}>
+            <div className='p-2' id='buy-section' style={{position: 'absolute', zIndex: 2, backgroundColor: 'var(--backgroundColor)', width: '100%', paddingBottom: 'calc(40vh - 186px)'}}>
                 <div style={{maxWidth: 600, margin: 'auto'}} className={'p-2' + (productData.pricesAndImagesList.length > 0 ? ' border': '')}>
                   {  productData.pricesAndImagesList.length > 0 && <div className='mb-2'>
                     <VarinatsSection {...{productData, setProductData}} />

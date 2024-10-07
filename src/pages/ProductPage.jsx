@@ -10,6 +10,7 @@ import { translaste } from '../utils/utils';
 import useFBViewPageEvent from '../hooks/useFBViewPageEvent';
 import { useParams } from 'react-router-dom';
 import useIncrementProductViewCount from './product-page/hooks/useIncrementProductViewCount'
+import { useStoreContext } from '../store/store-context';
 
 const VariantsSectionContainer = ()=>{
   const {productData, setProductData} = useProductContext()
@@ -22,13 +23,16 @@ const ProductPage=()=>{
   const {id: productId} = useParams()
   useIncrementProductViewCount(productId)
 
+  const {device} = useStoreContext()
+  const isMobile = device === 'mobile'
+
   return(
-    <div className='d-flex px-md-4 gap-md-3'>
+    <div className='d-flex px-md-4 gap-md-3' style={{minHeight: '100Vh'}}>
       <div className='col-12 col-md-6 px-md-4'>
         <>
-          {/* top: 64 */}
-          { productData.galleryImages.length > 0 &&  <div style={{ borderRadius: 'var(--border-radius-2)', overflow: 'hidden'}} className='p-sticky-md' id='image-slider__container'>
+          { productData.galleryImages.length > 0 &&  <div style={{ top: 56, borderRadius: 'var(--border-radius-2)', overflow: 'hidden'}} className='p-sticky-md d-flex flex-column' id='image-slider__container'>
               <ImageSlider/>
+              { isMobile && <hr className='border-color-primary-fiding' />}
             </div> 
           }
         </>

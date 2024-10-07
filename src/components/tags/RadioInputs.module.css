@@ -5,7 +5,7 @@
     width: 20px; /* Size of the radio button */
     height: 20px; /* Size of the radio button */
     border-radius: 50%; /* Makes it circular */
-    border: 2px solid var(--primary-color);; /* Green color */
+    border: 2px solid var(--primaryColor);; /* Green color */
     outline: none; /* Removes outline */
     cursor: pointer; /* Shows cursor on hover */
     position: relative;
@@ -16,7 +16,7 @@
     display: block;
     width: 10px; /* Size of the dot */
     height: 10px; /* Size of the dot */
-    background-color: var(--primary-color); /* Green color */
+    background-color: var(--primaryColor); /* Green color */
     border-radius: 50%; /* Makes it circular */
     position: absolute;
     top: 50%;

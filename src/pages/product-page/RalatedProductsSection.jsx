@@ -33,7 +33,7 @@ const RalatedProductsSection = () => {
   return (
     <div className='d-flex flex-wrap gap-2 p-2 justify-content-center col-12'>
         { !loading && relatedProducts && relatedProducts.map(product=><ProductCard key={product.index} product={product} />)}
-        { loading && <Loader diam={160} color='var(--primary-color)' /> }
+        { loading && <Loader diam={160} color='var(--primaryColor)' /> }
     </div>
   )
 }

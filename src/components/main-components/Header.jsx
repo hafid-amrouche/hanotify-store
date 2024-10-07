@@ -1,22 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useStoreContext } from '../../store/store-context'
-import IconWithHover from '../IconWithHover'
-import SideBar from '../Sidebar'
+import { Link } from 'react-router-dom'
+import ButtonWithSideBar from './ButtonWithSideBar'
 
-const ButtonWithModal=()=>{
-  const [open, setOpen] = useState(false)
-  const buttonClickHandler=()=>{
-    setOpen(state=>!state)
-  }
-  const {storeData} = useStoreContext()
-  return(
-    <div>
-      <IconWithHover onClick={buttonClickHandler} iconClass='fa-solid fa-bars' size={28} color={storeData.headerOutlined ? 'var(--primary-color)' : 'var(--background-color)'} />
-      <SideBar open={open} onClickBackdrop={()=>setOpen(false)} />
-    </div>
-    
-  )
-}
 
 const Header = () => {
   const {storeData} = useStoreContext()
@@ -26,7 +12,7 @@ const Header = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent:'space-between',
-      backgroundColor: storeData.headerOutlined ? 'var(--background-color)' : 'var(--primary-color)',
+      backgroundColor: storeData.headerOutlined ? 'var(--backgroundColor)' : 'var(--primaryColor)',
       borderBottom: 'var(--primary-fading-color) 1px solid',
       position: 'sticky',
       top:0,
@@ -35,8 +21,10 @@ const Header = () => {
      {/* <Button primary={primaryColor} secondary='#ffffff' >
         <i className="fa-solid fa-search" style={{fontSize: 20}}></i>
       </Button> */}
-      <img className='hover-scale' src={storeData.logo} height={48}  style={{borderRadius: 'var(--border-radius-1)'}}/>
-      <ButtonWithModal/>
+      <Link to='' className='d-flex'>
+        <img className='scale-on-hover' src={storeData.logo} height={38}  style={{borderRadius: 'var(--border-radius-1)'}}/>
+      </Link>
+      <ButtonWithSideBar/>
     </header>
   )
 }

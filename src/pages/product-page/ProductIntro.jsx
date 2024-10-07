@@ -11,8 +11,8 @@ const ProductIntro = memo(() => {
 
           { productData.discount &&
             <span style={{
-              backgroundColor: 'var(--primary-color)',
-              color: 'var(--background-color)',
+              backgroundColor: 'var(--primaryColor)',
+              color: 'var(--backgroundColor)',
               padding: '0 6px',
               margin:'0 8px',
               fontSize:14,
@@ -25,7 +25,7 @@ const ProductIntro = memo(() => {
           {productData.miniDescription}
         </p>}     
         <div className='d-flex align-items-center gap-3'>
-          { !productData.price ? '' : <h2 className='number' style={{color: 'var(--primary-color)'}}>{productData.price} {translaste('DA')}</h2>}
+          { !productData.price ? '' : <h2 className='number' style={{color: 'var(--primaryColor)'}}>{productData.price} {translaste('DA')}</h2>}
           { !productData.originalPrice  ? '' : <h3 className='old-price'>{productData.originalPrice} { translaste('DA') }</h3>}
           { !productData.price && !productData.originalPrice  && <h3 style={{color: 'red'}}>{ translaste('No price available !') }</h3> }
         </div>       

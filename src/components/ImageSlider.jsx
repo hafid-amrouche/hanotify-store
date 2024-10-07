@@ -6,11 +6,16 @@ import LazyLoadCustiom from './LazyLoadCustiom';
 import useGoBackOnePAth from '../hooks/useGoBackOnePath'
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Zoom  } from 'swiper/modules';
+import 'swiper/css/zoom';
+
+
 import "swiper/css";
 
 
 const ImageSlider = memo(({fullscreen=false}) => {
   const {currentImage, setCurrentImage, productData} = useProductContext()
+  const {screenWidth} = useStoreContext()
   
   const {galleryImages} = productData
   const images = galleryImages.map((image, index)=>({
@@ -85,46 +90,67 @@ const ImageSlider = memo(({fullscreen=false}) => {
     setCurrentImage(images.find(image=>image.id === swiper.activeIndex)) // swiper.activeIndex gives the current slide index
   };
   const swiperRef = useRef()
+
+  const aspectRatio = 1
   return (
     <div 
-      id="image-slider" className={`image-slider ${fullscreen ? 'fullscreen' : ''}`}
+      id="image-slider" className={`image-slider ${fullscreen ? 'fullscreen' : ''} ${screenWidth >= 768 && 'border' }` }
     >
         <div
-          className="slides" 
+          className={`slides `}
+          style={{
+            position: 'relative'
+          }}
         >
-              <Swiper
-                className="mySwiper"
-                onClick={()=>!fullscreen && navigate('gallery')}
-                onSlideChange={handleSlideChange}
-                ref={swiperRef}
-                initialSlide={currentImage.id}
-                grabCursor={true}
-                style={{ 
-                  height: '100%',
-                  width: '100%',
-                }}
+            <div style={{position: 'absolute', top:0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+              <div style={{
+                maxWidth:'100%',
+                aspectRatio,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
               >
-                {images.map((image, index)=>(
-                  <SwiperSlide
-                    key={index}
-                    className={`${fullscreen ? 'full-screen-image' : ''} flex-shrink-0`}
+                <div style={{ width: '100%', aspectRatio, height:''}}>
+                  <Swiper
+                    className="mySwiper"
+                    onClick={()=>!fullscreen && navigate('gallery')}
+                    onSlideChange={handleSlideChange}
+                    ref={swiperRef}
+                    initialSlide={currentImage.id}
+                    grabCursor={true}
                     style={{ 
-                      backgroundImage: `url(${image.url})` ,
                       height: '100%',
                       width: '100%',
-                      backgroundSize: fullscreen ? undefined : 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center',
-                      flexShrink: 0
+                      '--swiper-navigation-color': '#fff',
+                      '--swiper-pagination-color': '#fff',
                     }}
-                  />
-                ))}
-              </Swiper>
+                    modules={[Zoom]}
+                    zoom={true}
+                  >
+                    {images.map((image, index)=>(
+                      <SwiperSlide
+                        key={index}
+                        className={`${fullscreen ? 'full-screen-image' : ''} flex-shrink-0 swiper-zoom-container`}
+                        style={{ 
+                          backgroundImage: `url(${image.url})` ,
+                          height: '100%',
+                          width: '100%',
+                          backgroundSize: fullscreen ? undefined : 'contain',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundPosition: 'center',
+                          flexShrink: 0
+                        }}
+                      />
+                    ))}
+                  </Swiper>
+                </div>
+              </div>
+            </div>
             <button className={rtl ? ' next' : 'prev' } onClick={prevSlide}>&#10094;</button>
             <button className={rtl ? ' prev' : 'next'}  onClick={nextSlide}>&#10095;</button>
           <i className={ (fullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand') + ' fullscreen-btn' } onClick={toggleFullScreen}></i>
         </div>
-        <hr style={{width: '100%', borderTop: 0}} className='border-color-primary-fiding'/>
         <div 
           className="dots d-flex flex-nowrap overflow-x-auto"
           ref={dotContainerRef}
@@ -143,7 +169,7 @@ const ImageSlider = memo(({fullscreen=false}) => {
             </div>
               
           ))}
-        </div>        
+        </div>    
     </div>
   );
 })

@@ -94,10 +94,36 @@ const textsDict = {
     'Theme': 'وضع الرؤية',
     "Dark": 'داكن',
     'Light': 'ساطع',
-    'State': 'الولاية'
+    'State': 'الولاية',
+    'Top picks': 'أفضل المنتجات'
   },
   'en':{},
-  'fr': {}
+  'fr': {
+    'DA': 'DA',
+    'Full name': 'Nom complet',
+    'Phone number': 'Numéro de téléphone',
+    'Shipping to': 'Livraison à',
+    'Home': 'Maison',
+    'Office': 'Bureau',
+    'Total price': 'Prix total',
+    'Confirm order': 'Confirmer',
+    'Your order have been recieved': 'Votre commande a été reçue',
+    'Order now': 'Commander maintenant',
+    'Exit': 'Sortie',
+    'Free': 'Gratuit',
+    'Your order was not submitted, please try again': 'Votre commande n\'a pas été soumise, veuillez réessayer',
+    'No image was provider': 'Aucune image n\'a été fournie',
+    'No price available !': 'Aucun prix disponible !',
+    'Quantity': 'Quantité',
+    'Product price': 'Prix du produit',
+    'Shipping cost': 'Frais de livraison',
+    'Theme': 'Thème',
+    'Dark': 'Sombre',
+    'Light': 'Clair',
+    'State': 'État',
+    'Top picks': 'Meilleurs choix'
+  }
+  
 }
 export const translaste=(text)=>{
   const lang = localStorage.getItem('language') || 'ar'

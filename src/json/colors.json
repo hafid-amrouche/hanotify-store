@@ -1,0 +1,28 @@
+{
+    "colors":{
+            "light": {
+                "primaryColor" :  "#5825b8",
+                "primary100Color" : "#4d21a1",
+                "containerColor": "#ffffff",
+                "backgroundColor": "#f6f6f6",
+                "background200Color": "#c8c8c8",
+                "textColor": "#11181C",
+                "textFadingColor": "#11181C10",
+                "greyColor": "#707070",
+                "borderColor": "#80808060",
+                "successColor": "#28a745"
+            },
+            "dark": {
+                "primaryColor": "#3e1a85",
+                "primary100Color": "#371776",    
+                "containerColor": "#1e1e1e",    
+                "backgroundColor": "#121212",  
+                "background200Color": "#2c2c2c", 
+                "textColor": "#e0e0e0",       
+                "textFadingColor": "#e0e0e015", 
+                "greyColor": "#505050",          
+                "borderColor": "#50505080",    
+                "successColor": "#1e7e34"   
+            }
+        }
+}

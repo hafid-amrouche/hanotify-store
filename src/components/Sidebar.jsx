@@ -3,7 +3,11 @@ import classes from './Sidebar.module.css'
 import { translaste } from "../utils/utils";
 import TextOptions from './TextOptions'
 import { useStoreContext } from "../store/store-context";
-
+import { apiUrl } from "../constants/Urls";
+import Loader from './Loader'
+import {Link} from 'react-router-dom'
+import IconWithHover from './IconWithHover'
+ 
 const themeOptions=[
   {
     id: 1,
@@ -28,7 +32,7 @@ const themeOptions=[
 const SideBar=({open, onClickBackdrop})=>{
     const [isOpen, setIsOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-    const {theme, toggleTheme} = useStoreContext()
+    const {theme, toggleTheme, langTerms} = useStoreContext()
   
     const openSidebar = () => {
       // document.documentElement.classList.add('no-scroll');
@@ -50,12 +54,35 @@ const SideBar=({open, onClickBackdrop})=>{
       else closeSidebar()
     }, [open])
 
+    const [content, setContent] = useState(null)
+    const [loading, setLoading] = useState(false)
+    useEffect(()=>{
+      if (open && ! content){
+        setLoading(true)
+        fetch(apiUrl + '/store/get-sidebar-content?domain=' + window.location.host).then(response=>{
+          if (!response.ok){
+            setLoading(false)
+            return
+          }
+          response.json().then(data=>{
+            setContent(data)
+            setLoading(false)
+          })
+        }).catch(error=>{
+          console.log(error)
+          setLoading(false)
+        })
+      }
+    }, [open])
     return (
       <div>
         {isOpen && (
           <div className={`${classes['backdrop']} ${isClosing ? classes['backdrop-fade-out'] : ''}`} onClick={onClickBackdrop}>
             <div className={`${classes['sidebar']} ${isClosing ? classes['sidebar-slide-out'] : classes['sidebar-slide-in']}`} onClick={e => e.stopPropagation()}>
-              <div className="p-2">
+              <div 
+                style={{background: 'var(--primaryColor)', height: '100%',  color: 'var(--backgroundColor)'}}
+                className="d-flex flex-column justify-content-between"
+              >
                 { window.storeData.mode === 'auto' && <div className="d-flex flex-wrap gap-3">
                     <h3>{ translaste('Theme') }</h3>
                     <div>
@@ -66,6 +93,43 @@ const SideBar=({open, onClickBackdrop})=>{
                       />
                     </div>
                 </div>}
+                {
+                  loading && <div className="d-flex flex-column align-items-center justify-content-center" style={{height:'100%'}}>
+                      <Loader diam={200} />
+                  </div>  
+                }
+                <div>
+                  <div style={{display: 'flex',  justifyContent: 'end'}}>
+                    <IconWithHover onClick={onClickBackdrop} size={32} iconClass='fa-solid fa-xmark p-2' />
+                  </div>
+                  {
+                    content?.categories.map((catgory, index)=>(
+                      <Link 
+                        key={index} 
+                        className="primary-dark-on-hover cursor-pointer p-2 d-flex align-items-center justify-content-between"
+                        to={'/categories/' + catgory.slug}
+                        onClick={onClickBackdrop}
+                      >
+                        <div className="d-flex align-items-center">
+                          <i className="fa-solid fa-layer-group px-2" />
+                          <h3 >{translaste(catgory.name)}</h3>
+                        </div>
+                        
+                        <i className={`fa-solid fa-chevron-${langTerms['right']} px-3`} />
+                      </Link>
+                    ))
+                  }
+                </div>
+                {/* <div>
+                  <div className="primary-dark-on-hover cursor-pointer p-2 d-flex align-items-center justify-content-between">
+                    <h3 >{translaste('Privacy Policy')}</h3>
+                    <i className="fa-solid fa-chevron-left px-3" />
+                  </div>
+                  <div className="primary-dark-on-hover cursor-pointer p-2 d-flex align-items-center justify-content-between">
+                    <h3 >{translaste('Terms of service')}</h3>
+                    <i className="fa-solid fa-chevron-left px-3" />
+                  </div>
+                </div> */}
               </div>
             </div>
           </div>

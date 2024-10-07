@@ -1,5 +1,5 @@
 .text{
-    color: var(--primary-color);
+    color: var(--primaryColor);
     border: solid 1px var(--primary-fading-color);
     padding: 0 8px;
     cursor: pointer;
@@ -8,8 +8,8 @@
 .text:hover,
 .text:active,
 .text.selected{
-    background-color: var(--primary-color);
-    color: var(--background-color);
+    background-color: var(--primaryColor);
+    color: var(--backgroundColor);
 }
 .container{
     display: flex;

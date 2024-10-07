@@ -14,7 +14,7 @@
     left: 8px;
     z-index: 1;
     font-weight: bold;
-    color: var(--grey-color);
+    color: var(---greyColor);
     font-size: 1rem;
 }
 .label-on-top{
@@ -22,7 +22,7 @@
     top: -2px;
     left: 6px;
     font-weight:normal;
-    color: var(--text-color);
+    color: var(--textColor);
 }
 .placeholder-exist{
     padding: 6px 8px !important;

@@ -9,7 +9,8 @@ import { inDev } from '../../constants/Values'
 const PathChangeListner = ()=>{
   const location = useLocation()
   useEffect(()=>{
-    document.querySelector('#meta-url').setAttribute('content', window.location.href)
+    window.scrollTo(0, 0);
+    document.querySelector('#meta-url').setAttribute('content', window.location.href) 
   }, [location])
 }
 const Container = () => {
@@ -24,15 +25,21 @@ const Container = () => {
 
     loadRichTextCss();
   }, [storeData]);
+
   return (
     <>
         <Loading  id='loading__div' style={{display: 'none', position: 'fixed', width: '100%'}}/>
         <PathChangeListner />
-        { inDev && <Header/>}
-        <div style={{flexGrow: 1, minHeight: '100vh', maxWidth: 1340, width: '100%', margin: 'auto'}}>
+        <Header/>
+        <div style={{flexGrow: 1, minHeight: '100vh', width: '100%', margin: 'auto'}}>
           <Outlet/>
         </div>
-        {storeData.footer  && <LazyLoadCustiom className='p-1 sun-editor-editable' dangerouslySetInnerHTML={{ __html: storeData.footer }} />}
+        {storeData.footer  && 
+          <div>
+            <hr className='mt-3'/>
+            <LazyLoadCustiom className='p-1 sun-editor-editable' style={{marginTop: 12}} dangerouslySetInnerHTML={{ __html: storeData.footer }} />
+          </div>
+        }
           
     </>
   )

@@ -15,7 +15,7 @@ const ProductCard = ({product}) => {
             borderRadius: 'var(--border-radius-2)',
             width: 152
         }}
-        className='hover-scale'
+        // className='scale-on-hover'
         to={`/redirect?redirect=/products/${product.slug}/${product.product_id}`}
     >
         <LazyImage

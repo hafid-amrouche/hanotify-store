@@ -1,58 +1,4 @@
-// import React, { useRef, useState } from 'react';
-
-// const ScrollableDiv = () => {
-//   const containerRef = useRef(null);
-//   const [isTouching, setIsTouching] = useState(false);
-//   const startX = useRef(0);
-//   const scrollLeft = useRef(0);
-
-//   const handleTouchStart = (event) => {
-//     setIsTouching(true);
-//     startX.current = event.touches[0].clientX;
-//     scrollLeft.current = containerRef.current.scrollLeft;
-//   };
-
-//   const handleTouchMove = (event) => {
-//     if (isTouching) {
-//       const x = event.touches[0].clientX;
-//       const walk = x - startX.current;
-//       containerRef.current.scrollLeft = scrollLeft.current - walk;
-//     }
-//   };
-
-//   const handleTouchEnd = () => {
-//     setIsTouching(false);
-//   };
-
-//   return (
-//     <div
-//       ref={containerRef}
-//       style={{
-//         overflowX: 'auto',
-//         scrollBehavior: 'auto',
-//         whiteSpace: 'nowrap',
-//         touchAction: 'none', // Prevent default touch scrolling
-//       }}
-//       onTouchStart={handleTouchStart}
-//       onTouchMove={handleTouchMove}
-//       onTouchEnd={handleTouchEnd}
-//     >
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 1</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 2</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 3</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 4</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 5</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 6</div>
-//       <div style={{ display: 'inline-block', width: '200px', height: '100px', background: '#ddd', margin: '5px' }}>Item 7</div>
-//     </div>
-//   );
-// };
-
-// export default ScrollableDiv;
-
-
-
-import React, { lazy, useEffect } from 'react'
+import React, { lazy } from 'react'
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import Container from './components/main-components/Container'
 import StoreContextProvider from './store/store-context';
@@ -83,6 +29,9 @@ const PrivacyPolicy  = lazy(ImportPrivacyPolicy )
 const ImportTermsOfService = ()=>import('./pages/TermsOfService')
 const TermsOfService  = lazy(ImportTermsOfService)
 
+const ImportCategoryPage = ()=>import('./pages/CategoryPage')
+const CatgeoryPage  = lazy(ImportCategoryPage)
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -95,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'redirect',
         element: <Redirect/>,
+      },
+      {
+        path: 'categories/:slug',
+        element: <SuspenseComponent Component={CatgeoryPage} />
       },
       {
         path: 'products/:slug/:id',

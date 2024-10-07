@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react'
 import Loading from './Loading'
 
-const SuspenseComponent = ({Component, ...props}) => {
+const SuspenseComponent = ({Component, fallback=true, ...props}) => {
   return (
-      <Suspense fallback={<Loading/>}>
+      <Suspense fallback={fallback && <Loading/>}>
         <Component { ...props }/>
       </Suspense>
   )

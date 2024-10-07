@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect,  useMemo,  useState } from "react
 import { darkenHexColor, getColorScheme } from "../utils/utils"
 import { apiUrl } from "../constants/Urls"
 import FacebookPixel from "../components/FacebookPixel"
-import { inDev } from '../constants/Values'
+import { inDev, ltr, rtl } from '../constants/Values'
+import useGetCurrentScreenWidth from "../hooks/useGetCurrentScreenWidth"
 
 const root = document.getElementById('root')
 
@@ -24,7 +25,9 @@ const StoreContext = createContext({
     setVisitor: ()=>{},
     orders: {},
     setOrders: ()=>{},
-    addOrder: (productId)=>{}
+    addOrder: (productId)=>{},
+    langTerms: rtl,
+    device: 'mobile'
 })
 const ordersDatafromLocaleStorage = localStorage.getItem('ordersData')
 
@@ -51,21 +54,21 @@ else{
 if (inDev){
     window.storeData = {
         "id": 43,
-        "primaryColor": "#bca08a",
+        "primaryColor": "#815b3f",
         "bordersRounded": true,
         "logo": "http://files.localhost:8080//media//users/58/stores/43/48.png",
         "name": "qsdqd qsdqds",
         "description": "",
         "favicon": null,
         "headerOutlined": false,
-        "language": "ar",
+        "language": "fr",
         "mode": "light",
         "facebookPixelsId": [
             "1734156917355822"
         ],
-        "primaryColorDark": "#bca08a",
+        "primaryColorDark": "#815b3f",
         "footer": "<p style=\"text-align: center\"><span style=\"font-size: 16px;font-family: Comic Sans MS\"><strong>.جميع الحقوق محفوظة لشركة براء ميناج Baraa Ménage l عام 2024</strong></span></p><div class=\"se-component se-image-container __se__float-center\"><figure style=\"width: 107px;\"><p style=\"text-align: center\"><img loading=\"lazy\" src=\"http://files.localhost:8080//media//users/58/stores/43/images/6.webp\" alt=\"\" data-rotate=\"\" data-proportion=\"true\" data-size=\"107px,106px\" data-align=\"center\" data-file-name=\"17136688749101713668869360main.webp\" data-file-size=\"11440\" data-origin=\",\" origin-size=\"640,1000\" style=\"width: 107px; height: 106px;\"></p></figure></div>"
-    }  
+    }
 }
 
 const themeFromLocaleStorage = localStorage.getItem('theme')
@@ -85,17 +88,19 @@ const StoreContextProvider=({children})=>{
    
 
     // store data
-    const storeData = useMemo(()=>({
+    const [storeData, setStoreData] = useState({
         askForClientNote: false,
         askForAddress: false,
         facebookPixelsId: inDev ? ['1734156917355822', '1734256317355822'] : [],
         ...window.storeData
-    }), [])
+    })
 
     // language 
     const language = window.storeData.language || 'ar'
+    console.log(language) 
     useEffect(()=>{
         document.documentElement.setAttribute('lang', language)
+        localStorage.setItem('language', language)
         if (language === 'ar') {
             document.documentElement.setAttribute('dir', 'rtl')
             root.style.setProperty(
@@ -116,35 +121,33 @@ const StoreContextProvider=({children})=>{
 
         const primary = storeData.primaryColor
         const primaryDark = storeData.primaryColorDark
-        let colors ={}
+        let newColors ={}
         if (theme === 'dark'){
-            colors['--text-color'] = '#ffffff'
-            colors['--header-text-color'] = '#ffffff'
-            colors['--container-color'] = '#000000'
-            colors['--background-color'] = '#1a1a1a'
-            colors['--primary-color'] = primaryDark
-            colors['--primary-fading-color'] = primaryDark + '80'
-            colors['--primary-transparent-color'] = primaryDark + '20'
-            colors['--primary-dark-color'] = darkenHexColor(primaryDark, -20)
-            colors['--grey-color'] = '#666666'
-            colors['--grey100-color'] = '#909090'
-            colors['--border-color'] = '#99999980'
+            newColors['--textColor'] = '#ffffff'
+            newColors['--containerColor'] = '#000000'
+            newColors['--backgroundColor'] = '#1a1a1a'
+            newColors['--primaryColor'] = primaryDark
+            newColors['--primary-fading-color'] = primaryDark + '80'
+            newColors['--primary-transparent-color'] = primaryDark + '20'
+            newColors['--primary-dark-color'] = darkenHexColor(primaryDark, -20)
+            newColors['---greyColor'] = '#666666'
+            newColors['--grey100-color'] = '#909090'
+            newColors['--border-color'] = '#99999980'
         }else{
-            colors['--text-color'] = '#11181C'
-            colors['--header-text-color'] = '#ffffff'
-            colors['--container-color'] = '#e8e8e8'
-            colors['--background-color'] = '#ffffff'
-            colors['--primary-color'] = primary
-            colors['--primary-fading-color'] = primary +'80'
-            colors['--primary-transparent-color'] = primary + '20'
-            colors['--primary-dark-color'] = darkenHexColor(primary, 20)
-            colors['--grey-color'] = '#707070'
-            colors['--grey100-color'] = '#505050'
-            colors['--border-color'] = '#80808080'
+            newColors['--primaryColor'] = primary
+            newColors['--textColor'] = '#11181C'
+            newColors['--containerColor'] = '#fafafa'
+            newColors['--backgroundColor'] = '#ffffff'
+            newColors['--primary-fading-color'] = primary +'80'
+            newColors['--primary-transparent-color'] = primary + '20'
+            newColors['--primary-dark-color'] = darkenHexColor(primary, 20)
+            newColors['---greyColor'] = '#707070'
+            newColors['--grey100-color'] = '#505050'
+            newColors['--border-color'] = '#80808080'
         }
-        setColors(colors)
-        for (let key in colors) {
-            root.style.setProperty([key], colors[key])
+        setColors(newColors)
+        for (let key in newColors) {
+            root.style.setProperty([key], newColors[key])
         }
     }, [theme ,storeData.primaryColor])
     
@@ -187,7 +190,6 @@ const StoreContextProvider=({children})=>{
     // visitor tracking
     const [visitor, setVisitor] = useState(storeFromLocaleStorage)
     useEffect(()=>{
-    
         fetch(
           apiUrl + '/store/check-visitor',
           {
@@ -233,6 +235,17 @@ const StoreContextProvider=({children})=>{
         })
     }
     
+    const setColor= (id, value)=>{
+       setColors(colors=>({
+        ...colors,
+        [id]: value,
+       }))
+       root.style.setProperty([id], value)
+    }
+
+    const [pageBg, setPageBg] = useState(undefined)
+
+    const screenWidth = useGetCurrentScreenWidth()
     // default context value
     const defaultStoreValue={
         theme,
@@ -244,13 +257,19 @@ const StoreContextProvider=({children})=>{
         visitor,
         setVisitor,
         language,
-        orders, setOrders,addOrder
+        orders, setOrders,addOrder,
+        langTerms: language === 'ar' ? rtl : ltr,
+        device: screenWidth > 450 ? 'PC' : 'mobile',
+        setColor,
+        pageBg, setPageBg, screenWidth
     }
+
+    const fetchChildren = storeData.primaryColor && (JSON.stringify({}) !== JSON.stringify(colors))
     return(
         <StoreContext.Provider value={defaultStoreValue}>
             { storeData.facebookPixelsId.length > 0 && <FacebookPixel facebookPixelsId={storeData.facebookPixelsId} /> }
-            <div style={{display: "flex", flexDirection: 'column', minHeight:'100%'}}  id='app'>
-                { storeData.primaryColor && children} 
+            <div key={colors} style={{display: "flex", flexDirection: 'column', minHeight:'100%', backgroundColor: pageBg}}  id='app'>
+                { fetchChildren && children} 
             </div>
         </StoreContext.Provider>
     )

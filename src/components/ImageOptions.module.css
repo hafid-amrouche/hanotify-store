@@ -22,5 +22,5 @@
   border-radius: var(--border-radius-1);
 }
 .selected{
-  border: var(--primary-color) 1px solid
+  border: var(--primaryColor) 1px solid
 }

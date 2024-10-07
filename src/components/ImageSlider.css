@@ -5,18 +5,16 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  max-height: calc(100vh - 80px);
+  height: min(100vw, calc(100vh - 80px))
 }
   
 .slides {
   display: flex;
   transition: transform 0.5s ease;
   align-items: center;
-  height: 100%;
   width: 100%;
-  aspect-ratio: 3/4;
+  flex: 1;
 }
 
 .slide {
@@ -30,7 +28,7 @@
 }
 
 .active {
-  border: solid 1px var(--primary-color) !important;
+  border: solid 1px var(--primaryColor) !important;
 }
 
 .dots {
@@ -57,7 +55,7 @@
   position: absolute;
   cursor: pointer;
   background-color: var(--primary-fading-color);
-  color: var(--background-color);
+  color: var(--backgroundColor);
   border: none;
   outline: none;
   font-size: 16px;
@@ -67,17 +65,17 @@
   border-radius: 50%;
   z-index: 1;
 }
-@media (max-width: 500px) {
+@media (max-width: 768px) {
   .prev, .next { display: none;}
 }
 
 .prev {
-  left: 0;
+  left: 8px;
 }
 
 
 .next {
-  right: 0;
+  right: 8px;
 
 }
 
@@ -87,7 +85,7 @@
   right: 10px;
   cursor: pointer;
   background-color: var(--primary-fading-color);
-  color: var(--background-color);
+  color: var(--backgroundColor);
   padding: 6px;
   z-index: 1;
   border-radius: var(--border-radius-1);
