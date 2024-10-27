@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkhanotify_store=self.webpackChunkhanotify_store||[]).push([[2363],{2363:(e,s,t)=>{t.r(s),t.d(s,{default:()=>a});const a={}}}]);
+//# sourceMappingURL=2363.e1dd665f.chunk.js.map
