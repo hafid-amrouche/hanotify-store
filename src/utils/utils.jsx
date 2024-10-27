@@ -95,7 +95,10 @@ const textsDict = {
     "Dark": 'داكن',
     'Light': 'ساطع',
     'State': 'الولاية',
-    'Top picks': 'أفضل المنتجات'
+    'Top picks': 'أفضل المنتجات',
+    'Empty product': "منتج فارغ",
+    'Order number': 'رقم الطلبية'
+
   },
   'en':{},
   'fr': {
@@ -121,7 +124,9 @@ const textsDict = {
     'Dark': 'Sombre',
     'Light': 'Clair',
     'State': 'État',
-    'Top picks': 'Meilleurs choix'
+    'Top picks': 'Meilleurs choix',
+    'Empty product': 'Produit vide',
+    'Order number': 'Numéro de commande'
   }
   
 }
@@ -237,7 +242,7 @@ export function isElementFocused(inputElement) {
   return document.activeElement === inputElement;
 }
 
-export function isDifferenceMoreThan100Hours(time1) {
+export function isDifferenceMoreThan200Hours(time1) {
   // Get the current time (now) in milliseconds
   const now = Date.now();
 
@@ -248,14 +253,15 @@ export function isDifferenceMoreThan100Hours(time1) {
   const differenceInHours = differenceInMs / (1000 * 60 * 60);
 
   // Check if the difference is greater than 100 hours
-  return differenceInHours > 100;
+  return differenceInHours > 200;
 }
 
-export const checkHasEnoughTimePassed=(productLastOrder)=>{
-  if (inDev) return true
-  let enoughTimePassed = true
-  if (productLastOrder){
-      enoughTimePassed = isDifferenceMoreThan100Hours(productLastOrder.lastOrderTime)
-  }
-  return enoughTimePassed
+export function hexToRgb(hex) {
+  hex = hex.replace(/^#/, '');  
+  let r = parseInt(hex.slice(0, 2), 16);
+  let g = parseInt(hex.slice(2, 4), 16);
+  let b = parseInt(hex.slice(4, 6), 16);
+
+  // Return the formatted RGB string
+  return `${r}, ${g}, ${b}`;
 }

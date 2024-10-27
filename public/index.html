@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}" dir="{{dir}}">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,38 +7,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
 
-    <script>
-      window.storeData = JSON.parse('{{ store|escapejs }}');
-      var product = '{{ product|escapejs }}'
-      if (product){
-        window.productData = JSON.parse(product);
-      }
-        
-    </script>
-
     <!-- Open Graph Meta Tags for SEO -->
-    <title>{{title}}</title>
-    <meta property="og:title" id="meta-title" content="{{title}}">
-    <meta name="description" id="description" content="{{description}}">
-    <meta property="og:description" id="meta-descrition" content="{{description}}">
+    <title>Hanotify</title>
+    <meta property="og:title" id="meta-title" content="Hanotify">
+    <meta name="description" id="description">
+    <meta property="og:description" id="meta-descrition">
 
-    <meta property="og:image"  id="meta-image"  content="{{image}}">
-    <link rel="icon" id="favicon-link" type="image/x-icon" href="{{ favicon }}">
+    <meta property="og:image"  id="meta-image">
+    <link rel="icon" id="favicon-link" type="image/x-icon">
 
-    <meta property="og:url" id="meta-url" content="{{ url }}">
+    <meta property="og:url" id="meta-url">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

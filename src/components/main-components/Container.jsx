@@ -4,7 +4,6 @@ import { Outlet, useLocation } from 'react-router-dom'
 import Loading from '../Loading'
 import LazyLoadCustiom from '../LazyLoadCustiom'
 import { useStoreContext } from '../../store/store-context'
-import { inDev } from '../../constants/Values'
 
 const PathChangeListner = ()=>{
   const location = useLocation()
@@ -31,8 +30,8 @@ const Container = () => {
         <Loading  id='loading__div' style={{display: 'none', position: 'fixed', width: '100%'}}/>
         <PathChangeListner />
         <Header/>
-        <div style={{flexGrow: 1, minHeight: '100vh', width: '100%', margin: 'auto'}}>
-          <Outlet/>
+        <div style={{flexGrow: 1, minHeight: '100vh', width: '100%', margin: 'auto', display: 'flex', flexDirection: 'column'}}>
+            <Outlet/>
         </div>
         {storeData.footer  && 
           <div>

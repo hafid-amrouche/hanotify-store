@@ -11,7 +11,7 @@ const HomePage = () => {
 
   useEffect(()=>{
     fetch(
-      apiUrl + '/store/home-page-sections?domain='+host,
+      apiUrl + '/store/store-home-page-sections?domain='+host.replace('8080', '3001'),
     ).then((response)=>{
       response.json().then(data=>{
         setSections(data.sections)
@@ -25,7 +25,11 @@ const HomePage = () => {
     return setPageBg(undefined)
   }, [generalDesign])
   return (
-    <div >
+    generalDesign && <div style={{
+        background: generalDesign[device].backgroundColor[theme], 
+        flex: 1,
+        '--swiper-theme-color': "var(--primaryColor)"
+      }} >
       {
         sections && sections.map(section=>(
           <BlockSection key={section.id} section={section} />

@@ -32,7 +32,7 @@
 }
 
 .color-primary-fading{
-  color: var(--primary-fading-color);
+  color: rgba(var(--primaryColor-rgb), 0.8);
 }
 
 .color-primary{
@@ -43,7 +43,7 @@
 }
 
 .border-color-primary-fiding{
-  border-color: var(--primary-fading-color);
+  border-color: rgba(var(--primaryColor-rgb), 0.8);
 }
 
 .p-relative{
@@ -52,10 +52,6 @@
 
 .input-container{
   width: 100%;
-}
-
-.text-grey{
-  color: var(--grey100-color);
 }
 
 .no-scroll {
@@ -84,7 +80,7 @@ input{
   margin-bottom: 8px;
 }
 .border{
-  border:1px var(--primary-fading-color) solid;
+  border:1px rgba(var(--primaryColor-rgb), 0.8) solid;
   border-radius: var(--border-radius-2);
 }
 .border-primary-v{
@@ -92,7 +88,7 @@ input{
   border-bottom: 1px var(--primaryColor) solid
 }
 .border-top{
-  border-top:1px var(--primary-fading-color) solid;
+  border-top:1px rgba(var(--primaryColor-rgb), 0.8) solid;
 }
 .cut-text{
   white-space: nowrap; /* Prevents the text from wrapping to the next line */
@@ -107,7 +103,7 @@ input{
   font-size: 16px;
   margin: 0;
   background-clip: padding-box;
-  border: 1px solid var(--primary-fading-color);
+  border: 1px solid rgba(var(--primaryColor-rgb), 0.8);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   position: relative;
   overflow: hidden; /* Ensures that the overflow text is hidden */
@@ -154,7 +150,7 @@ input{
     transform: scale(1);
   }
   100% {
-    transform: scale(1.05);
+    transform: scale(1.03);
   }
 }
 
@@ -194,5 +190,6 @@ input{
 }
 
 .primary-dark-on-hover:hover{
-  background-color: var(--primary-dark-color) !important;
+  background-color: var(--primary100Color) !important;
 }
+

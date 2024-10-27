@@ -6,7 +6,7 @@ import SwiperImageCard from './gallery-swiper/components/SwiperImageCard'
 
 const SimpleSwiper = ({section}) => {
     const {device} = useStoreContext()
-    const isSectionProductsContainer = section.type === 'products-container'
+    const isSectionProductsContainer = section.type === 'products-container' || section.type=== 'category'
     const isSectionSwiper = section.type === 'swiper'
 
     const sectionDesign = 
@@ -20,7 +20,7 @@ const SimpleSwiper = ({section}) => {
     
   return (
     <div className='d-flex flex-wrap' style={{
-        justifyContent: justifyContent
+        justifyContent: justifyContent,
     }}>
         {
           isSectionProductsContainer && section.products.map(product=><ProductCard key={product.product_id} product={product} sectionDesign={sectionDesign} />)

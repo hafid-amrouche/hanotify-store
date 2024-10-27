@@ -5,10 +5,10 @@ import ProductsSwiper from './block-section/ProductsSwiper'
 import classes from './BlockSection.module.css'
 
 const BlockSection = ({section}) => {
-    const { device, theme } = useStoreContext() 
-    const isSectionProductsContainer = section.type === 'products-container'
+    const { device, theme, } = useStoreContext() 
+    const isSectionProductsContainer = section.type === 'products-container' || section.type === 'category'
     const isSectionSwiper = section.type === 'swiper'
-    if (isSectionSwiper && section.device !== device) return 
+    if (!section.device.includes(device)) return 
     const sectionDesign = 
         isSectionProductsContainer ? section.design[device]:
         isSectionSwiper ? section.design:
@@ -32,12 +32,13 @@ const BlockSection = ({section}) => {
         >
             <div
                 style={{
-                    maxWidth: 1340,
+                    width: '100%',
                     margin: 'auto'
                 }}
             >
-                {section.type==='products-container' && <GallerySection section={section} />}
-                {section.type==='swiper' && <ProductsSwiper  section={section} />}
+                {(section.type==='products-container' || section.type=== 'category' ) && <GallerySection section={section} />}
+                {section.type==='swiper' && <ProductsSwiper  section={section} />}  {/* // Means general swiper */}
+                
             </div>
         </div>
     )

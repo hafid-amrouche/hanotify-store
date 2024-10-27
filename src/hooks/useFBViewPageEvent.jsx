@@ -5,7 +5,7 @@ const useFBViewPageEvent = () => {
     const {storeData, visitor} = useStoreContext()
     const {facebookPixelsId} = storeData
     useEffect(()=>{
-        if(facebookPixelsId.length > 0 && !visitor.isBlocked) window.fbq('track', 'PageView');
+        if(facebookPixelsId?.length > 0 && !visitor.isBlocked) window.fbq('track', 'PageView');
     }, [facebookPixelsId])
 }
 

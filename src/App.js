@@ -2,11 +2,12 @@ import React, { lazy } from 'react'
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import Container from './components/main-components/Container'
 import StoreContextProvider from './store/store-context';
-import Redirect from './pages/Redirect';
 import SuspenseComponent from './components/SuspenseComponent'
 import { componentLoader } from './utils/utils';
-import HomePage from './pages/HomePage'
 
+
+const ImportHomePage = ()=>import('./pages/HomePage')
+const HomePage  = lazy(ImportHomePage)
 
 const ImportProductPage = ()=>import('./pages/ProductPage')
 const ProductPage = lazy(ImportProductPage)
@@ -39,11 +40,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage/>,
-      },
-      {
-        path: 'redirect',
-        element: <Redirect/>,
+        element: <SuspenseComponent Component={HomePage} />,
       },
       {
         path: 'categories/:slug',

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Loader from './Loader'
 
-const LazyImage = ({ src, alt, placeholder, className, ...props }) => {
+const LazyImage = ({ src, alt, diam, className, ...props }) => {
   const [isInView, setIsInView] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const imageRef = useRef(null);
@@ -37,14 +38,17 @@ const LazyImage = ({ src, alt, placeholder, className, ...props }) => {
   }, []);
 
   return (
+    <>
       <img
-        src={isInView ? src : placeholder}
+        src={isInView ? src : undefined}
         alt={alt}
         onLoad={() => setLoaded(true)}
         className={`${className} ${loaded ? 'loaded' : 'loading'}`}
         {...props}
         ref={imageRef}
       />
+      { diam && !loaded && <Loader diam={diam} /> }
+    </>
   );
 };
 

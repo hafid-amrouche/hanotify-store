@@ -8,7 +8,7 @@ const ProductsSwiper=({section})=>{
     // products
     const {device} = useStoreContext()
 
-    const isSectionProductsContainer = section.type === 'products-container'
+    const isSectionProductsContainer = section.type === 'products-container' || section.type=== 'category'
     const isSectionSwiper = section.type === 'swiper'
 
     const sectionDesign = 

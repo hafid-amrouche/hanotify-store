@@ -4,16 +4,8 @@ import { useProductContext } from '../pages/product-page/store/product-context'
 import LazyImage from './LazyImage'
 
 const ImageOptions = ({options, setSelectedImageOption, selectedImageOption}) => {
-  const {setCurrentImage} = useProductContext()
   const clickHandler=(option)=>{
-    setSelectedImageOption(option)
-    setCurrentImage((id)=>{
-      return ({
-        id: id,
-        url: option.image
-      })
-    })
-    const element = document.documentElement
+    setSelectedImageOption(option)    
   }
   return (
     <div className={classes.container}>

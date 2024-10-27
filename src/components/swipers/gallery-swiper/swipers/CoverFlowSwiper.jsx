@@ -13,7 +13,7 @@ import SwiperImageCard from '../components/SwiperImageCard'
 const CoverFlowSwiper=({section})=>{
     const {device} = useStoreContext()
 
-    const isSectionProductsContainer = section.type === 'products-container'
+    const isSectionProductsContainer = section.type === 'products-container' || section.type=== 'category'
     const isSectionSwiper = section.type === 'swiper'
 
     const sectionDesign = 
@@ -60,7 +60,7 @@ const CoverFlowSwiper=({section})=>{
             { isSectionProductsContainer && section.products?.map(product=>
                 <SwiperSlide 
                     key={product.product_id}
-                    style={{width: '100%'}}
+                    style={{width: '100%', }}
                 >
                     <ProductCard sectionDesign={sectionDesign} product={product} />
                 </SwiperSlide>
@@ -68,7 +68,7 @@ const CoverFlowSwiper=({section})=>{
             { isSectionSwiper && section.imageObjects?.map(imageObject=>
                 <SwiperSlide 
                     key={imageObject.url}
-                    style={{width: '100%'}}
+                    style={{width: '100%', }}
                 >
                     <SwiperImageCard sectionDesign={sectionDesign} imageObject={imageObject} />
                 </SwiperSlide>

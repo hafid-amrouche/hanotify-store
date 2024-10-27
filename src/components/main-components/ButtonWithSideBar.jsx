@@ -11,7 +11,7 @@ const ButtonWithSideBar=()=>{
     const {storeData} = useStoreContext()
     return(
       <div className='d-flex'>
-        <IconWithHover onClick={buttonClickHandler} iconClass='fa-solid fa-bars' size={22} color={storeData.headerOutlined ? 'var(--primaryColor)' : 'var(--backgroundColor)'} />
+        <IconWithHover onClick={buttonClickHandler} iconClass='fa-solid fa-bars' size={28} color={storeData.headerOutlined ? 'var(--primaryColor)' : 'var(--backgroundColor)'} />
         <SideBar open={open} onClickBackdrop={()=>setOpen(false)} />
       </div>
       

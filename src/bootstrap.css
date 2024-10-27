@@ -2515,7 +2515,7 @@ html {
     text-align: center;
 }
 .bg-primary-fading{
-    background-color: var(--primary-fading-color);
+    background-color: rgba(var(--primaryColor-rgb), 0.8);
 }
 .sticky-bottom{
     position: sticky;

@@ -24,12 +24,12 @@ const GallerySection = ({section}) => {
 
     return(
         <div >
-                { showTitle && 
-                    <div className='d-flex g-2 align-items-center color-primary' style={{ justifyContent: direction, color: titleLabelColor, padding}}>
-                        <h4 style={{fontSize: titleSize, color: titleLabelColor}} >{ translaste(section.title )}</h4>
-                    </div>
-                }
-                { section.products.length > 0 && <ProductsSwiper section={section} />}
+            { showTitle && 
+                <div className='d-flex g-2 align-items-center color-primary' style={{ justifyContent: direction, color: titleLabelColor, padding}}>
+                    <h4 style={{fontSize: titleSize, color: titleLabelColor}} >{ translaste(section.title )}</h4>
+                </div>
+            }
+             <ProductsSwiper section={section} />
         </div>     
     )
 }

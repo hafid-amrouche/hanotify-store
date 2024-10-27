@@ -9,6 +9,7 @@ import '../css/suneditor-contents.css'
 import VarinatsSection from './product-page/VarinatsSection'
 import useFBViewPageEvent from '../hooks/useFBViewPageEvent'
 import useIncrementProductViewCount from './product-page/hooks/useIncrementProductViewCount'
+import { useStoreContext } from '../store/store-context'
 
 
 const defaultProductData = {
@@ -34,46 +35,38 @@ const LandingPage = () => {
     const [productData, setProductData] = useState(defaultProductData)
     const [error, setError] = useState(false)
     const {id: productId} = useParams()
+    const {storeData, language} = useStoreContext()
+
+    const lang_prefix = language === 'ar' ? '_ar': '' 
 
     useEffect(()=>{
         const fetchProduct=async()=>{
           setError(false)
           try{
-            let data;
-            if (window.productData){
-              data = window.productData
-            }
-            else{
-              const response = await fetch(
-                filesUrl + `/get-product?product_id=${productId}`,
-                {
-                  method: 'get'
-                }
-              )
-              if (!response.ok) {
-                console.log(`Error: ${response.status} ${response.statusText}`);
-                setError(true)
-                return;
+           
+            const response = await fetch(
+              filesUrl + `/get-product?product_id=${productId}`,
+              {
+                method: 'get'
               }
-              data = await response.json()
-            } 
-              
+            )
+            if (!response.ok) {
+              console.log(`Error: ${response.status} ${response.statusText}`);
+              setError(true)
+              return;
+            }
+            const data = await response.json()              
 
-            let shippingCostByState = data.shippingCostByState
-            shippingCostByState = shippingCostByState.length > 0 ? shippingCostByState.map(cost=>{
+            let shippingCostByState = data.useDefaultShipping ? storeData.defaultShippigCosts : data.shippingCostByState
+            shippingCostByState = shippingCostByState.map(cost=>{
               const state = states.find(state=>state.id === cost.id)
               return({
                   ...cost,
                   cost: cost.cost,
                   costToHome: cost.costToHome,
-                  label: `${state.code} - ${state.name_ar}`,
+                  label: `${state.code} - ${state['name' + lang_prefix]}`,
               })
-            }): states.map(state=>({
-              cost: 0,
-              costToHome: 0,
-              label: `${state.code} - ${state.name_ar}`,
-              id :state.id
-            }))
+            })
             setProductData(productData=>({
                 ...productData,
                 ...data,

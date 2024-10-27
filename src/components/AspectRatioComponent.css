@@ -1,0 +1,16 @@
+/* Parent container that has a fixed size */
+.aspect-ratio-component-container {
+    width: 100%;
+    height: 100%;
+    position: relative;  /* Allows the aspect ratio box to be centered */
+  }
+  
+  /* Aspect ratio box that adjusts its size dynamically */
+.aspect-ratio-component-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0 auto;
+  }
+  

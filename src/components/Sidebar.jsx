@@ -74,6 +74,8 @@ const SideBar=({open, onClickBackdrop})=>{
         })
       }
     }, [open])
+    const {storeData} = useStoreContext()
+
     return (
       <div>
         {isOpen && (
@@ -83,7 +85,7 @@ const SideBar=({open, onClickBackdrop})=>{
                 style={{background: 'var(--primaryColor)', height: '100%',  color: 'var(--backgroundColor)'}}
                 className="d-flex flex-column justify-content-between"
               >
-                { window.storeData.mode === 'auto' && <div className="d-flex flex-wrap gap-3">
+                { storeData.mode === 'auto' && <div className="d-flex flex-wrap gap-3">
                     <h3>{ translaste('Theme') }</h3>
                     <div>
                       <TextOptions 
@@ -98,10 +100,11 @@ const SideBar=({open, onClickBackdrop})=>{
                       <Loader diam={200} />
                   </div>  
                 }
-                <div>
-                  <div style={{display: 'flex',  justifyContent: 'end'}}>
-                    <IconWithHover onClick={onClickBackdrop} size={32} iconClass='fa-solid fa-xmark p-2' />
-                  </div>
+                <div style={{display: 'flex',  justifyContent: 'end', position: 'absolute', right: 0}}>
+                  <IconWithHover onClick={onClickBackdrop} size={28} iconClass='fa-solid fa-xmark p-2' />
+                </div>
+                <div style={{marginTop: 42}}>
+                  
                   {
                     content?.categories.map((catgory, index)=>(
                       <Link 

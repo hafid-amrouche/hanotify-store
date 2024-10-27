@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { createContext } from "react";
-import { apiUrl, filesUrl } from '../../../constants/Urls';
+import { filesUrl } from '../../../constants/Urls';
 import {Outlet, useNavigate, useParams} from 'react-router-dom'
 import states from '../../../json/states.json'
 import { translaste } from '../../../utils/utils';
@@ -33,7 +33,7 @@ const ProductContext = createContext({
 })
 
 
-const ProductContextProvider=()=>{
+const ProductContextProviderInner=()=>{
     const [productData, setProductData] = useState(defaultProductData)
     const [error, setError] = useState(false)
     const [currentImage, setCurrentImage] = useState(null)
@@ -41,6 +41,8 @@ const ProductContextProvider=()=>{
 
     const {language} = useStoreContext()
     const lang_prefix = language === 'ar' ? '_ar': '' 
+
+    const {storeData} = useStoreContext()
     useEffect(()=>{
       const fetchProduct=async()=>{
         setError(false)
@@ -66,8 +68,8 @@ const ProductContextProvider=()=>{
           }
 
 
-          let shippingCostByState = data.shippingCostByState
-          shippingCostByState = shippingCostByState.length > 0 ? shippingCostByState.map(cost=>{
+          let shippingCostByState = data.useDefaultShipping ? storeData.defaultShippigCosts : data.shippingCostByState
+          shippingCostByState = shippingCostByState.map(cost=>{
             const state = states.find(state=>state.id === cost.id)
             return({
                 ...cost,
@@ -75,23 +77,18 @@ const ProductContextProvider=()=>{
                 costToHome: cost.costToHome,
                 label: `${state.code} - ${state['name' + lang_prefix]}`,
             })
-          }): states.map(state=>({
-            cost: 0,
-            costToHome: 0,
-            label: `${state.code} - ${state['name' + lang_prefix]}`,
-            id :state.id
-          }))
+          })
           
+          data.galleryImages = [...(data.galleryImages || []), ...(data.pricesAndImagesList?.map(row=>row.image).filter(img=>!!img) || [])]
           setProductData(productData=>({
               ...productData,
               ...data,
               shippingCostByState: shippingCostByState,
           }))
-          if(data.galleryImages?.length>0) setCurrentImage({
+          if(data.galleryImages?.length > 0) setCurrentImage({
             id:0,
             url:data.galleryImages[0]
           })
-
           // SEO
           document.title = data.title || 'Hanotify'
           document.querySelector('#meta-title').setAttribute('content', data.title || 'Hanotify')
@@ -106,6 +103,7 @@ const ProductContextProvider=()=>{
         }              
       }
       fetchProduct()
+      return ()=>{window.productData = undefined}
     }, [])
     
     
@@ -133,24 +131,44 @@ const ProductContextProvider=()=>{
 
     const navigate = useNavigate()
 
+
+    const swiperRef = useRef()
+    
     const defaultValue = {
       productData,
       setProductData,
       currentImage,
       setCurrentImage: setCurrentImageWithImagesCount,
+      swiperRef
     }
+
+    useEffect(()=>{
+      if (productData.combinationIndex >= 0){
+        const image =  productData.pricesAndImagesList[productData.combinationIndex]?.image
+        if (image) {
+          const imageIndex = productData.galleryImages.indexOf(image)
+          if (imageIndex >= 0)  swiperRef.current?.swiper.slideTo(imageIndex)
+          swiperRef.current?.swiper.slideTo(imageIndex)
+        }
+      }
+    }, [productData.combinationIndex])
     return (
-        <ProductContext.Provider value={defaultValue}>
-            { productData.productId && <Outlet/>}
-            { error && <div className='flex-1 d-flex flex-column gap-2 align-items-center justify-content-center' style={{minHeight: 500, width: '100%'}} >
-              <h2 className='color-red'>{ translaste('Wrong link') }</h2>
-              <BuyButton outline className='d-flex gap-3' onClick={()=>navigate('/')}>
-                <i className='fa-solid fa-chevron-left'></i>
-                {translaste('Go back to store')}
-              </BuyButton>
-            </div> }
-        </ProductContext.Provider>
+      <ProductContext.Provider value={defaultValue}>
+          { productData.productId && <Outlet/>}
+          { error && <div className='flex-1 d-flex flex-column gap-2 align-items-center justify-content-center' style={{minHeight: 500, width: '100%'}} >
+            <h2 className='color-red'>{ translaste('Wrong link') }</h2>
+            <BuyButton outline className='d-flex gap-3' onClick={()=>navigate('/')}>
+              <i className='fa-solid fa-chevron-left'></i>
+              {translaste('Go back to store')}
+            </BuyButton>
+          </div> }
+      </ProductContext.Provider>
     )
+}
+
+const ProductContextProvider=()=>{
+  const {id: productId} = useParams()
+  return <ProductContextProviderInner key={productId} />
 }
 
 export default ProductContextProvider

@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { checkHasEnoughTimePassed, isDifferenceMoreThan100Hours, isNum, parseFullName, translaste } from '../../utils/utils'
+import { isDifferenceMoreThan200Hours, isNum, parseFullName, translaste } from '../../utils/utils'
 import BuyButton from '../../components/BuyButton'
 import classes from './BuySection.module.css'
 import { apiUrl } from '../../constants/Urls'
@@ -9,6 +9,7 @@ import Loader from '../../components/Loader'
 import {useStoreContext} from '../../store/store-context'
 import Accordiant from '../../components/Accordiant'
 import { useNavigate, useParams } from 'react-router-dom'
+import { inDev } from '../../constants/Values'
 
 const NoteSection = ({setClientNote, showCN, setShowCN})=>{
     useEffect(()=>{
@@ -23,6 +24,26 @@ const NoteSection = ({setClientNote, showCN, setShowCN})=>{
             { showCN && <textarea onBlur={e=>setClientNote(e.target.value)} className='input m-2'/>}
         </div>
     )
+}
+
+const postOrder = (orders, productId)=>{
+    const productLastOrder = orders[productId]
+
+    if (!productLastOrder || inDev ){
+        return true
+    }
+
+    const deltaTimes = productLastOrder.deltaTimes || 0
+
+    let enoughTimePassed  = true
+
+    if (deltaTimes >= 2){
+        enoughTimePassed = isDifferenceMoreThan200Hours(productLastOrder.lastOrderTime)
+        if (enoughTimePassed){
+            orders[productId].deltaTimes = 0
+        }
+    }
+    return enoughTimePassed
 }
 
 const BuySection = memo(({productData}) => {
@@ -90,7 +111,9 @@ const BuySection = memo(({productData}) => {
     })()
 
     const fullNameValid = fulllName.trim()
-    const enable = fullNameValid && phoneNumberValid && selectedShipping.id
+
+    const showStates = useRef(shippingCostByStateList.length > 1)
+    const enable = fullNameValid && phoneNumberValid && (selectedShipping.id || !showStates.current)
 
     const {id: productId} = useParams()
     
@@ -104,8 +127,7 @@ const BuySection = memo(({productData}) => {
     const totalPrice = productData.price * quantity + selectedShipping[selectShippingType]
 
     const confirmOrder=async()=>{
-        const productLastOrder = orders[productId]
-        const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
+        const enoughTimePassed = postOrder(orders, productId)
         setLoading(true)
         setError(false)
         const order = {
@@ -129,6 +151,7 @@ const BuySection = memo(({productData}) => {
             quantity, 
             shippingCost : selectedShipping[selectShippingType],
             etp: enoughTimePassed,
+            orderId,
         })}`
         try{
             if(!visitor.isBlocked && enoughTimePassed ){ 
@@ -179,12 +202,19 @@ const BuySection = memo(({productData}) => {
         if (value ==='' || (value.startsWith('0') && isNum(value[value.length-1]))) setphoneNumber(value)   
     }
 
+    const createOrderSent = useRef(false)
+    const createOrderSending = useRef(false)
     const makeOrder=async()=>{
         try{
-            const productLastOrder = orders[productId]
-            const enoughTimePassed = checkHasEnoughTimePassed(productLastOrder)
-
+            const enoughTimePassed = postOrder(orders, productId)
             if(!visitor.isBlocked && enoughTimePassed){ 
+                if (!orderId){
+                    if (createOrderSending.current || createOrderSent.current){
+                        return
+                    }
+                    createOrderSending.current = true
+                    createOrderSent.current = false
+                }
                 fetch(apiUrl + ( orderId ? '/orders/update-order' : '/orders/create-order'), {
                     method: 'POST',
                     headers: {
@@ -206,6 +236,10 @@ const BuySection = memo(({productData}) => {
                         combination_index: combinationIndex,
                     })
                 }).then(response=>response.json().then(data=>{
+                    if (!orderId){
+                        createOrderSending.current = false
+                        createOrderSent.current = true
+                    }
                     if(ordersData.orderId !== data.orderId){
                         setOrdersData(ordersData=>({
                             ...ordersData,
@@ -245,7 +279,7 @@ const BuySection = memo(({productData}) => {
     }, [phoneNumber])
 
     return (
-        <div className={classes['container'] + ' border p-1'} style={{ backgroundColor: 'var(--primary-transparent-color)', borderRadius: 'var(--border-radius-3)' }}>
+        <div className={classes['container'] + ' border p-1'} style={{ backgroundColor: 'rgba(var(--primaryColor-rgb), 0.2)', borderRadius: 'var(--border-radius-3)' }}>
             <div className={classes['container-info']}>
                 <div className='d-flex align-items-center'>
                     <div className='col-6 p-1'>
@@ -255,12 +289,15 @@ const BuySection = memo(({productData}) => {
                     <div className='col-6 p-1'>
                         <TextInput label={translaste('Phone number')} error={!phoneNumberValid  && fullNameValid} type='tel' value={phoneNumber} maxLength={10} onChange={setPhoneNumber}/>
                     </div>
-                    <div className='col-6 p-1'>
-                        <Select  error={phoneNumberValid && fullNameValid && !selectedShipping.id} options={shippingCostByStateList} setSelectedOption={setSelectedShipping} selectedOption={selectedShipping} keyExtractor={option=>option.id}/>
-                    </div>
-                    { <div className='col-6 p-1'>
-                        { selectShippingType!=='cost' && stateCities.length > 0 && selectedShipping.id &&  <Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>}
-                    </div>}
+                    { showStates.current && <>
+                        <div className='col-6 p-1'>
+                            <Select  error={phoneNumberValid && fullNameValid && !selectedShipping.id} options={shippingCostByStateList} setSelectedOption={setSelectedShipping} selectedOption={selectedShipping} keyExtractor={option=>option.id}/>
+                        </div>
+                        <div className='col-6 p-1'>
+                            { selectShippingType!=='cost' && stateCities.length > 0 && selectedShipping.id &&  <Select options={stateCities} setSelectedOption={setCity} selectedOption={city} keyExtractor={option=>option.id}/>}
+                        </div>
+                    </>}
+                        
                     { storeData.askForAddress && <div className='col-12 p-1'>
                         <TextInput label='Address' value={shippigAddress} onChange={(value)=>setShippingAddress(value)} />
                     </div>}

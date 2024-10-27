@@ -27,10 +27,10 @@ const ProductPage=()=>{
   const isMobile = device === 'mobile'
 
   return(
-    <div className='d-flex px-md-4 gap-md-3' style={{minHeight: '100Vh'}}>
+    <div className='d-md-flex px-md-4 gap-md-3 flex-wrap' style={{minHeight: '100Vh', maxWidth: 1340, width: '100%', margin: 'auto'}}>
       <div className='col-12 col-md-6 px-md-4'>
         <>
-          { productData.galleryImages.length > 0 &&  <div style={{ top: 56, borderRadius: 'var(--border-radius-2)', overflow: 'hidden'}} className='p-sticky-md d-flex flex-column' id='image-slider__container'>
+          { productData.galleryImages.length > 0 &&  <div style={{ overflow: 'hidden' ,height: '100%'}} className='p-sticky-md d-flex flex-column' id='image-slider__container'>
               <ImageSlider/>
               { isMobile && <hr className='border-color-primary-fiding' />}
             </div> 
@@ -42,7 +42,6 @@ const ProductPage=()=>{
               style={{
                 aspectRatio: 1, 
                 maxWidth: '100%', 
-                maxHeight: 'calc(100vh - 80px)',
                 margin: 'auto',
               }}
             >

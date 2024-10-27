@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom"
 import { useStoreContext } from "../store/store-context"
 import { useEffect, useState } from "react"
-import { translaste, checkHasEnoughTimePassed } from "../utils/utils"
+import { translaste } from "../utils/utils"
 import {useProductContext} from './product-page/store/product-context'
 import { filesUrl } from "../constants/Urls"
 import LazyLoadCustiom from "../components/LazyLoadCustiom"
@@ -59,6 +59,7 @@ const ThankYouPage=()=>{
     const totalPrice = order.totalPrice || 0;
     const index = order.index || 0;
     const enoughTimePassed = order.etp
+    const orderId = order.orderId
     
     const {productData} = useProductContext()
     
@@ -118,7 +119,7 @@ const ThankYouPage=()=>{
         };
         loadRichTextCss();
       }, [message]);
-    if (message !== undefined){
+    if (!fecthing){
         return(
             <div 
                 
@@ -152,6 +153,9 @@ const ThankYouPage=()=>{
                             </div>
                         </div>
                         <div>
+                            { orderId && <div className="d-flex gap-1">
+                                <h4>{ translaste('Order number') }: <span className="color-primary">#{orderId}</span></h4>
+                            </div>}
                             <div className="d-flex gap-1">
                                 <h4>{ translaste('Product price') }: <span className="color-primary">{productPrice} {translaste('DA')}</span></h4>
                             </div>

@@ -1,6 +1,5 @@
 .text{
     color: var(--primaryColor);
-    border: solid 1px var(--primary-fading-color);
     padding: 0 8px;
     cursor: pointer;
     border-radius: var(--border-radius-1);

@@ -1,6 +1,6 @@
 .progress-bar {
     height: 4px;
-    background-color: var(--primary-transparent-color);
+    background-color: rgba(var(--primaryColor-rgb), 0.2);
     width: 100%;
     overflow: hidden;
 }

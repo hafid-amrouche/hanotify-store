@@ -1,18 +1,20 @@
 import React from 'react'
 import { useStoreContext } from '../../../../store/store-context'
 import { Link } from 'react-router-dom'
+import LazyImage from '../../../LazyImage'
 
 const SwiperImageCard=({imageObject, sectionDesign: imageDesign})=>{
     const {theme} = useStoreContext()
     
     const {
+        gap,
         image: {
             border: {
                 radius: borderRadius,
                 color:  {
                     [theme] : borderColor
                 },
-            width: borderWidth,
+                 width: borderWidth,
             },
             aspectRatio,
             objectFit,
@@ -21,26 +23,22 @@ const SwiperImageCard=({imageObject, sectionDesign: imageDesign})=>{
     
     const Tag = imageObject.link ? Link : 'div'
     return(
-        <Tag to={imageObject.link || undefined}>
+        <Tag style={{padding: gap/2}} to={imageObject.link || undefined}>
             <div  
                 style={{ 
                     overflow: 'hidden', 
                     borderRadius: borderRadius, 
                     border: `${borderWidth}px solid ${borderColor}`,
+                    display: 'flex'
                 }}>
                     
-                    <div 
+                    <LazyImage
                         style={{
                             width: '100%', 
                             aspectRatio: aspectRatio, 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent:'center',
-                            backgroundImage: `url(${imageObject.url})`,
-                            backgroundSize: objectFit,
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
+                            objectFit,
                         }} 
+                        src={imageObject.url}
                     />
             </div>
         </Tag>
