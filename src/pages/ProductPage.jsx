@@ -9,7 +9,6 @@ import LazyLoadCustiom from '../components/LazyLoadCustiom';
 import { translaste } from '../utils/utils';
 import useFBViewPageEvent from '../hooks/useFBViewPageEvent';
 import { useParams } from 'react-router-dom';
-import useIncrementProductViewCount from './product-page/hooks/useIncrementProductViewCount'
 import { useStoreContext } from '../store/store-context';
 
 const VariantsSectionContainer = ()=>{
@@ -21,7 +20,6 @@ const ProductPage=()=>{
   const {productData} = useProductContext()
   useFBViewPageEvent()
   const {id: productId} = useParams()
-  useIncrementProductViewCount(productId)
 
   const {device} = useStoreContext()
   const isMobile = device === 'mobile'

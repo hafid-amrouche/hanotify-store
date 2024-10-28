@@ -6,6 +6,8 @@ import states from '../../../json/states.json'
 import { translaste } from '../../../utils/utils';
 import BuyButton from '../../../components/BuyButton';
 import { useStoreContext } from '../../../store/store-context';
+import useIncrementProductViewCount from '../hooks/useIncrementProductViewCount';
+
 
 const defaultProductData = {
     productId: null,
@@ -133,14 +135,6 @@ const ProductContextProviderInner=()=>{
 
 
     const swiperRef = useRef()
-    
-    const defaultValue = {
-      productData,
-      setProductData,
-      currentImage,
-      setCurrentImage: setCurrentImageWithImagesCount,
-      swiperRef
-    }
 
     useEffect(()=>{
       if (productData.combinationIndex >= 0){
@@ -152,6 +146,18 @@ const ProductContextProviderInner=()=>{
         }
       }
     }, [productData.combinationIndex])
+    
+    useIncrementProductViewCount(productId)
+    
+    const defaultValue = {
+      productData,
+      setProductData,
+      currentImage,
+      setCurrentImage: setCurrentImageWithImagesCount,
+      swiperRef
+    }
+
+
     return (
       <ProductContext.Provider value={defaultValue}>
           { productData.productId && <Outlet/>}

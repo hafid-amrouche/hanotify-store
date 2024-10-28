@@ -98,6 +98,19 @@ const StoreContextProvider = ({ children }) => {
           ...data,
         }));
         setLanguage(data.language)
+        // set meta data
+        const defaultTitle = document.title
+        document.title = data.name || defaultTitle
+        document.querySelector('#meta-title').setAttribute('content', data.name || defaultTitle)
+
+        const defaultDescription = document.querySelector('#description').getAttribute('content')
+        document.querySelector('#description').setAttribute('content', data.description || defaultDescription)
+        document.querySelector('#meta-descrition').setAttribute('content', data.description || defaultDescription)
+
+        document.querySelector('#meta-image').setAttribute('content', data.logo)
+
+        document.querySelector('#favicon-link').setAttribute('href', data.favicon)
+                
       });
     });
   }, []);
